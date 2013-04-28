@@ -45,7 +45,7 @@ def shell(args):
         root.unmount(mounted)
 
 
-def main():
+def run():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
 
