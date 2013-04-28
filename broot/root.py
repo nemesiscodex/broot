@@ -29,22 +29,14 @@ class Root:
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
                             "/tmp"]:
             dest_path = os.path.join(self._path, source_path[1:])
-            self.run(["mount", "--bind", source_path, dest_path])
+            check_call(["mount", "--bind", source_path, dest_path])
             mounted.append(dest_path)
 
         return mounted
 
     def unmount(self, mounted):
-        # Kill the system dbus daemon to be able to unmount
-        dbus_pid_path = os.path.join(self._path, "var/run/dbus/pid")
-        with open(dbus_pid_path) as f:
-            try:
-                os.kill(int(f.read().strip()), signal.SIGTERM)
-            except OSError:
-                pass
-
         for mount_path in reversed(mounted):
-            self.run(["umount", mount_path])
+            check_call(["umount", mount_path])
 
     def install_packages(self, packages):
         self.run("apt-get update")
