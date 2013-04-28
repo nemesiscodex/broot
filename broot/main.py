@@ -27,7 +27,7 @@ def create(args):
 
     mounted = root.mount()
     try:
-        root.install_packages(["build-essentials"])
+        root.install_packages(["build-essential"])
     finally:
         root.unmount(mounted)
 
