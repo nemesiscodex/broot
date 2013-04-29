@@ -14,7 +14,6 @@
 # limitations under the License.
 
 import os
-import signal
 import shutil
 from subprocess import check_call
 
@@ -41,7 +40,8 @@ class Root:
     def install_packages(self, packages):
         self.run("apt-get update")
         self.run("apt-get dist-upgrade")
-        self.run("apt-get -y install %s" % " ".join(packages))
+        self.run("apt-get -y --no-install-recommends install %s" %
+                 " ".join(packages))
 
     def create(self):
         try:

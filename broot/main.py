@@ -56,8 +56,8 @@ def run():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
 
-    build_parser = subparsers.add_parser("create")
-    shell_parser = subparsers.add_parser("shell")
+    subparsers.add_parser("create")
+    subparsers.add_parser("shell")
 
     args = parser.parse_args()
     if args.command == "create":
