@@ -14,29 +14,30 @@
 # limitations under the License.
 
 import argparse
+import json
 import os
 import sys
 
 from broot.root import Root
 
 
-def create(args):
-    root = Root(args.root_dir)
+def create(config):
+    root = Root(config["path"])
 
     root.create()
 
     mounted = root.mount()
     try:
-        root.install_packages(["build-essential"])
+        root.install_packages(config["packages"])
     finally:
         root.unmount(mounted)
 
 
-def shell(args):
-    if not os.path.exists(args.root_dir):
-        sys.exit("The specified root dir does not exists")
+def shell(config):
+    if not os.path.exists(config["path"]):
+        sys.exit("Create the root first")
 
-    root = Root(args.root_dir)
+    root = Root(config["path"])
 
     mounted = root.mount()
     try:
@@ -49,17 +50,17 @@ def run():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
 
+    with open("root.json") as f:
+        config = json.load(f)
+
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
 
     build_parser = subparsers.add_parser("create")
-    build_parser.add_argument("root_dir")
-
     shell_parser = subparsers.add_parser("shell")
-    shell_parser.add_argument("root_dir")
 
     args = parser.parse_args()
     if args.command == "create":
-        create(args)
+        create(config)
     if args.command == "shell":
-        shell(args)
+        shell(config)

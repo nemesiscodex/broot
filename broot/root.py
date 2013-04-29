@@ -45,7 +45,7 @@ class Root:
 
     def create(self):
         try:
-            os.mkdir(self._path)
+            os.makedirs(self._path)
         except OSError:
             pass
 
