@@ -22,7 +22,7 @@ from broot.root import Root
 
 
 def create(config):
-    root = Root(config)
+    root = Root(config["path"])
 
     root.create()
 
@@ -34,7 +34,10 @@ def create(config):
 
 
 def shell(config):
-    root = Root(config)
+    if not os.path.exists(config["path"]):
+        sys.exit("Create the root first")
+
+    root = Root(config["path"])
 
     mounted = root.mount()
     try:
@@ -47,12 +50,8 @@ def run():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
 
-    manifest_path = os.path.abspath("broot.json")
-
-    with open(manifest_path) as f:
+    with open("root.json") as f:
         config = json.load(f)
-
-    config["source_dir"] = os.path.dirname(manifest_path)
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")

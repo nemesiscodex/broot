@@ -19,30 +19,19 @@ from subprocess import check_call
 
 
 class Root:
-    def __init__(self, config):
-        self._path = config["root_dir"]
-        self._source_dir = config["source_dir"]
+    def __init__(self, path):
+        self._path = os.path.abspath(path)
 
     def mount(self):
-        to_mount = {}
+        mounted = []
 
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
                             "/tmp"]:
-            to_mount[os.path.join(self._path, source_path[1:])] = source_path
-
-        chroot_source_dir = os.path.join(self._path, "root", "source")
-
-        try:
-            os.makedirs(chroot_source_dir)
-        except OSError:
-            pass
-
-        to_mount[chroot_source_dir] = self._source_dir
-
-        for dest_path, source_path in to_mount.items():
+            dest_path = os.path.join(self._path, source_path[1:])
             check_call(["mount", "--bind", source_path, dest_path])
+            mounted.append(dest_path)
 
-        return to_mount.keys()
+        return mounted
 
     def unmount(self, mounted):
         for mount_path in reversed(mounted):
