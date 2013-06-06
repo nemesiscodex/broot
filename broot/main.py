@@ -22,7 +22,7 @@ from broot.root import Root
 
 
 def create(config):
-    root = Root(config["path"])
+    root = Root(config)
 
     root.create()
 
@@ -34,7 +34,7 @@ def create(config):
 
 
 def shell(config):
-    if not os.path.exists(config["path"]):
+    if not os.path.exists(config):
         sys.exit("Create the root first")
 
     root = Root(config["path"])

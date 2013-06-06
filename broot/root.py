@@ -14,33 +14,24 @@
 # limitations under the License.
 
 import os
-import shutil
 from subprocess import check_call
 
-
-class DebianBuilder:
-    def __init__(self, root):
-        self._root = root
-
-    def create(self):
-        try:
-            check_call(["debootstrap", "wheezy", self.path])
-        except (Exception, KeyboardInterrupt):
-            shutil.rmtree(self.path)
-            raise
-
-    def install_packages(self, packages):
-        self._root.run("apt-get update")
-        self._root.run("apt-get dist-upgrade")
-        self._root.run("apt-get -y --no-install-recommends install %s" %
-                       " ".join(packages))
+from broot.builder import FedoraBuilder
+from broot.builder import DebianBuilder
 
 
 class Root:
-    def __init__(self, path):
-        self.path = os.path.abspath(path)
+    def __init__(self, config):
+        self.path = os.path.abspath(config["path"])
 
-        self._builder = DebianRootBuilder(self)
+        distro = config.get("distro", "debian")
+
+        if distro == "debian":
+            self._builder = DebianBuilder(self)
+        elif distro == "fedora":
+            self._builder = FedoraBuilder(self)
+        else:
+            raise ValueError("Unknown distro %s" % distro)
 
     def mount(self):
         mounted = []
