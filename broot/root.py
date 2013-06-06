@@ -18,16 +18,36 @@ import shutil
 from subprocess import check_call
 
 
+class DebianBuilder:
+    def __init__(self, root):
+        self._root = root
+
+    def create(self):
+        try:
+            check_call(["debootstrap", "wheezy", self.path])
+        except (Exception, KeyboardInterrupt):
+            shutil.rmtree(self.path)
+            raise
+
+    def install_packages(self, packages):
+        self._root.run("apt-get update")
+        self._root.run("apt-get dist-upgrade")
+        self._root.run("apt-get -y --no-install-recommends install %s" %
+                       " ".join(packages))
+
+
 class Root:
     def __init__(self, path):
-        self._path = os.path.abspath(path)
+        self.path = os.path.abspath(path)
+
+        self._builder = DebianRootBuilder(self)
 
     def mount(self):
         mounted = []
 
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
                             "/tmp"]:
-            dest_path = os.path.join(self._path, source_path[1:])
+            dest_path = os.path.join(self.path, source_path[1:])
             check_call(["mount", "--bind", source_path, dest_path])
             mounted.append(dest_path)
 
@@ -38,32 +58,25 @@ class Root:
             check_call(["umount", mount_path])
 
     def install_packages(self, packages):
-        self.run("apt-get update")
-        self.run("apt-get dist-upgrade")
-        self.run("apt-get -y --no-install-recommends install %s" %
-                 " ".join(packages))
+        self._builder.install_packages(packages)
 
     def create(self):
         try:
-            os.makedirs(self._path)
+            os.makedirs(self.path)
         except OSError:
             pass
 
-        try:
-            check_call(["debootstrap", "wheezy", self._path])
-        except (Exception, KeyboardInterrupt):
-            shutil.rmtree(self._path)
-            raise
+        self._builder.create()
 
         self._setup_bashrc()
 
     def run(self, command):
         check_call("chroot %s /bin/bash -lc \"%s\"" %
-                   (self._path, command), shell=True)
+                   (self.path, command), shell=True)
 
     def _setup_bashrc(self):
         environ = {"LANG": "C"}
 
-        with open(os.path.join(self._path, "root", ".bashrc"), "w") as f:
+        with open(os.path.join(self.path, "root", ".bashrc"), "w") as f:
             for variable, value in environ.items():
                 f.write("export %s=%s\n" % (variable, value))
