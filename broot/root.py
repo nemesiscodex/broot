@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import os
+import shutil
 from subprocess import check_call
 
 from broot.builder import FedoraBuilder
@@ -33,20 +34,23 @@ class Root:
         else:
             raise ValueError("Unknown distro %s" % distro)
 
-    def mount(self):
-        mounted = []
+    def activate(self):
+        self._mounted = []
 
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
                             "/tmp"]:
             dest_path = os.path.join(self.path, source_path[1:])
             check_call(["mount", "--bind", source_path, dest_path])
-            mounted.append(dest_path)
+            self._mounted.append(dest_path)
 
-        return mounted
+        shutil.copyfile(os.path.join("/etc", "resolv.conf"),
+                        os.path.join(self.path, "etc", "resolv.conf"))
 
-    def unmount(self, mounted):
-        for mount_path in reversed(mounted):
+    def deactivate(self):
+        for mount_path in reversed(self._mounted):
             check_call(["umount", mount_path])
+
+        del self._mounted
 
     def install_packages(self, packages):
         self._builder.install_packages(packages)

@@ -26,24 +26,24 @@ def create(config):
 
     root.create()
 
-    mounted = root.mount()
+    root.activate()
     try:
         root.install_packages(config["packages"])
     finally:
-        root.unmount(mounted)
+        root.deactivate()
 
 
 def shell(config):
-    if not os.path.exists(config):
+    if not os.path.exists(config["path"]):
         sys.exit("Create the root first")
 
-    root = Root(config["path"])
+    root = Root(config)
 
-    mounted = root.mount()
+    root.activate()
     try:
         root.run("/bin/bash")
     finally:
-        root.unmount(mounted)
+        root.deactivate()
 
 
 def run():
