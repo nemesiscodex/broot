@@ -73,7 +73,7 @@ class FedoraBuilder:
 
         repo_config = """
             [fedora]
-            name=Fedora 19 - i386
+            name=Fedora 19 - x86_64
             failovermethod=priority
             baseurl=%s
             enabled=1
