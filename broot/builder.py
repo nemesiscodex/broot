@@ -68,14 +68,17 @@ class FedoraBuilder:
         with open(ignoreos_py_path, "w") as f:
             f.write(response.read())
 
+        base_url = "ftp://mirrors.kernel.org/fedora/releases/19/Fedora/" \
+                   "x86_64/os"
+
         repo_config = """
             [fedora]
             name=Fedora 19 - i386
             failovermethod=priority
-            baseurl=ftp://mirrors.kernel.org/fedora/development/19/i386/os
+            baseurl=%s
             enabled=1
             gpgcheck=0
-            ignore_os=1"""
+            ignore_os=1""" % base_url
 
         repos_d_path = os.path.join(self._root.path, "etc", "yum.repos.d")
 
@@ -88,8 +91,8 @@ class FedoraBuilder:
     def create(self):
         root_path = self._root.path
 
-        release_rpm = "ftp://mirrors.kernel.org/fedora/development/" \
-                      "19/i386/os/Packages/f/fedora-release-19-0.5.noarch.rpm"
+        release_rpm = "ftp://mirrors.kernel.org/fedora/releases/19/Fedora/" \
+                      "x86_64/os/Packages/f/fedora-release-19-2.noarch.rpm"
         try:
             check_call(["rpm", "--root", root_path, "--initdb"])
             check_call(["rpm", "--root", root_path, "--ignoreos", "-i",
