@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import os
+import signal
 import shutil
 from subprocess import check_call
 
