@@ -75,6 +75,9 @@ class Root:
     def install_packages(self, packages):
         self._builder.install_packages(packages)
 
+        if "sudo" in packages:
+            self._setup_sudo()
+
     def create(self, mirror=None):
         try:
             os.makedirs(self.path)
@@ -87,7 +90,6 @@ class Root:
 
         self._create_user()
         self._setup_bashrc(os.path.join("home", self._user_name))
-        self._setup_sudo()
 
     def run(self, command, root=False):
         if root:
