@@ -124,7 +124,7 @@ class Root:
                 f.write("export %s=%s\n" % (variable, value))
 
     def _setup_sudo(self):
-        sudoers_path = "/etc/sudoers"
+        sudoers_path = os.path.join(self.path, "etc", "sudoers")
 
         with open(sudoers_path) as f:
             conf = f.read()
