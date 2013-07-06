@@ -71,8 +71,8 @@ class Root:
         for pid in os.listdir("/proc"):
             if pid.isdigit():
                 try:
-                    print "Killing %s"
                     if os.readlink("/proc/%s/root" % pid) == self.path:
+                        print "Killing %s" % pid
                         os.kill(int(pid), signal.SIGTERM)
                 except OSError, e:
                     print "Failed: %s" % e
