@@ -35,7 +35,7 @@ def create(config):
 
 def run(config, command):
     if not os.path.exists(config["path"]):
-        sys.exit("Create the root first")
+        create(config)
 
     root = Root(config)
 
