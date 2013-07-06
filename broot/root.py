@@ -42,7 +42,8 @@ class Root:
         mounts = {}
 
         for source_path, dest_path in self._config.get("mounts", {}).items():
-            mounts[source_path] = os.path.abspath(dest_path)
+            full_dest_path = os.path.join(self.path, dest_path)
+            mounts[os.path.abspath(source_path)] = full_dest_path
 
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
                             "/tmp"]:
@@ -98,7 +99,8 @@ class Root:
         self.run("/usr/sbin/addgroup %s --gid %s" % (self._user_name, gid),
                  root=True)
 
-        self.run("/usr/sbin/adduser %s --uid %s --gid %s" %
+        self.run("/usr/sbin/adduser %s --uid %s --gid %s "
+                 "--disabled-password --gecos \"\"" %
                  (self._user_name, os.environ["SUDO_UID"], gid), root=True)
 
     def _setup_bashrc(self, home_path):

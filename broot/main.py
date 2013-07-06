@@ -50,6 +50,8 @@ def main():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
 
+    os.environ["BROOT"] = "yes"
+
     with open("root.json") as f:
         config = json.load(f)
 
