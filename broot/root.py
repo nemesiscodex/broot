@@ -102,7 +102,8 @@ class Root:
         check_call("%s %s /bin/bash -lc \"%s\"" %
                    (chroot, self.path, command), shell=True)
 
-        os.environ["HOME"] = orig_home
+        if orig_home:
+            os.environ["HOME"] = orig_home
 
     def _create_user(self):
         gid = os.environ["SUDO_GID"]
