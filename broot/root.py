@@ -55,6 +55,11 @@ class Root:
         self._mounted = []
 
         for source_path, dest_path in self._mounts.items():
+            try:
+                os.makedirs(dest_path)
+            except OSError:
+                pass
+
             check_call(["mount", "--bind", source_path, dest_path])
             self._mounted.append(dest_path)
 
@@ -85,13 +90,19 @@ class Root:
 
     def run(self, command, root=False):
         if root:
+            orig_home = None
             chroot = "chroot"
         else:
+            orig_home = os.environ["HOME"]
             chroot = "chroot --userspec %s:%s" % (
                 self._user_name, self._user_name)
 
+        os.environ["HOME"] = "/home/%s" % self._user_name
+
         check_call("%s %s /bin/bash -lc \"%s\"" %
                    (chroot, self.path, command), shell=True)
+
+        os.environ["HOME"] = orig_home
 
     def _create_user(self):
         gid = os.environ["SUDO_GID"]
@@ -100,7 +111,7 @@ class Root:
                  root=True)
 
         self.run("/usr/sbin/adduser %s --uid %s --gid %s "
-                 "--disabled-password --gecos \"\"" %
+                 "--disabled-password --gecos ''" %
                  (self._user_name, os.environ["SUDO_UID"], gid), root=True)
 
     def _setup_bashrc(self, home_path):
