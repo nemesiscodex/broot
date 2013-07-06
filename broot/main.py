@@ -33,7 +33,7 @@ def create(config):
         root.deactivate()
 
 
-def shell(config):
+def run(config, command):
     if not os.path.exists(config["path"]):
         sys.exit("Create the root first")
 
@@ -46,7 +46,7 @@ def shell(config):
         root.deactivate()
 
 
-def run():
+def main():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
 
@@ -59,8 +59,13 @@ def run():
     subparsers.add_parser("create")
     subparsers.add_parser("shell")
 
+    run_parser = subparsers.add_parser("run")
+    run_parser.add_argument("subcommand", nargs="?")
+
     args = parser.parse_args()
     if args.command == "create":
         create(config)
-    if args.command == "shell":
-        shell(config)
+    elif args.command == "run":
+        run(config, args.subcommand)
+    elif args.command == "shell":
+        run(config, "/bin/bash")

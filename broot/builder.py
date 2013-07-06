@@ -51,8 +51,8 @@ class FedoraBuilder:
         with open(yum_conf_path, "w") as f:
             f.write(textwrap.dedent(yum_conf))
 
-        response = urllib2.urlopen("https://raw.github.com/toomasp/" \
-                                   "yum-plugin-ignoreos/master/" \
+        response = urllib2.urlopen("https://raw.github.com/toomasp/"
+                                   "yum-plugin-ignoreos/master/"
                                    "yum_ignoreos.conf")
 
         ignoreos_conf_path = os.path.join(plugin_conf_path,
@@ -60,8 +60,8 @@ class FedoraBuilder:
         with open(ignoreos_conf_path, "w") as f:
             f.write(response.read())
 
-        response = urllib2.urlopen("https://raw.github.com/toomasp/" \
-                                   "yum-plugin-ignoreos/master/" \
+        response = urllib2.urlopen("https://raw.github.com/toomasp/"
+                                   "yum-plugin-ignoreos/master/"
                                    "yum_ignoreos.py")
 
         ignoreos_py_path = os.path.join(yum_plugins_path, "yum_ignoreos.conf")
@@ -118,7 +118,7 @@ class DebianBuilder:
         root_path = self._root.path
 
         try:
-            check_call(["debootstrap", "wheezy", root_path])
+            check_call(["debootstrap", "jessie", root_path])
         except (Exception, KeyboardInterrupt):
             shutil.rmtree(root_path)
             raise

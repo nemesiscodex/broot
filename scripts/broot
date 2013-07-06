@@ -2,4 +2,4 @@
 
 from broot import main
 
-main.run()
+main.main()

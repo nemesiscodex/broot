@@ -25,6 +25,10 @@ class Root:
     def __init__(self, config):
         self.path = os.path.abspath(config["path"])
 
+        self._config = config
+        self._mounts = self._compute_mounts()
+        self._user_name = "broot"
+
         distro = config.get("distro", "debian")
 
         if distro == "debian":
@@ -34,12 +38,22 @@ class Root:
         else:
             raise ValueError("Unknown distro %s" % distro)
 
-    def activate(self):
-        self._mounted = []
+    def _compute_mounts(self):
+        mounts = {}
+
+        for source_path, dest_path in self._config.get("mounts", {}).items():
+            mounts[os.path.abspath(source_path)] = dest_path
 
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
                             "/tmp"]:
-            dest_path = os.path.join(self.path, source_path[1:])
+            mounts[source_path] = os.path.join(self.path, source_path[1:])
+
+        return mounts
+
+    def activate(self):
+        self._mounted = []
+
+        for source_path, dest_path in self._mounts.items():
             check_call(["mount", "--bind", source_path, dest_path])
             self._mounted.append(dest_path)
 
@@ -63,15 +77,28 @@ class Root:
 
         self._builder.create()
 
-        self._setup_bashrc()
+        self._setup_bashrc("root")
 
-    def run(self, command):
-        check_call("chroot %s /bin/bash -lc \"%s\"" %
-                   (self.path, command), shell=True)
+        self._create_user()
+        self._setup_bashrc(os.path.join("home", self._user_name))
 
-    def _setup_bashrc(self):
+    def run(self, command, root=False):
+        if root:
+            chroot = "chroot"
+        else:
+            chroot = "chroot --userspec %s:%s" % (
+                self._user_name, self._user_name)
+
+        check_call("%s %s /bin/bash -lc \"%s\"" %
+                   (chroot, self.path, command), shell=True)
+
+    def _create_user(self):
+        self.run(["adduser", self._user_name, "--uid", os.environ["SUDO_UID"],
+                  "--gid", os.environ["SUDO_GID"]], root=True)
+
+    def _setup_bashrc(self, home_path):
         environ = {"LANG": "C"}
 
-        with open(os.path.join(self.path, "root", ".bashrc"), "w") as f:
+        with open(os.path.join(self.path, home_path, ".bashrc"), "w") as f:
             for variable, value in environ.items():
                 f.write("export %s=%s\n" % (variable, value))

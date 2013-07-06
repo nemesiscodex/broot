@@ -13,11 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import subprocess
 from distutils.core import setup
+from distutils.cmd import Command
+
 
 classifiers = ["License :: OSI Approved :: Apache Software License",
                "Programming Language :: Python :: 2",
                "Topic :: Software Development :: Libraries :: Build Tools"]
+
+
+class LintCommand(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        subprocess.check_call(["pep8", "broot"])
+        subprocess.check_call(["pyflakes", "broot"])
+
 
 setup(name="broot",
       packages=["broot"],
@@ -27,4 +45,5 @@ setup(name="broot",
       author_email="dwnarvaez@gmail.com",
       url="http://github.com/dnarvaez/broot",
       classifiers=classifiers,
+      cmdclass={"lint": LintCommand},
       scripts=["scripts/broot"])
