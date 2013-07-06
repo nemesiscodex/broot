@@ -21,7 +21,7 @@ import sys
 from broot.root import Root
 
 
-def create(config, mirror):
+def create(config, mirror=None):
     root = Root(config)
 
     root.create(mirror)
