@@ -67,14 +67,18 @@ class Root:
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
                         os.path.join(self.path, "etc", "resolv.conf"))
 
-    def deactivate(self):
+    def _kill_processes(self):
         for pid in os.listdir("/proc"):
             if pid.isdigit():
                 try:
+                    print "Killing %s"
                     if os.readlink("/proc/%s/root" % pid) == self.path:
                         os.kill(int(pid), signal.SIGTERM)
-                except OSError:
-                    pass
+                except OSError, e:
+                    print "Failed: %s" % e
+
+    def deactivate(self):
+        self._kill_processes()
 
         for mount_path in reversed(self._mounted):
             check_call(["umount", mount_path])
