@@ -71,6 +71,6 @@ def main():
     if args.command == "create":
         create(config, args.mirror)
     elif args.command == "run":
-        run(config, " ".join(args.subcommand))
+        run(config, " ".join(args.subcommand), args.mirror)
     elif args.command == "shell":
         run(config, "/bin/bash")
