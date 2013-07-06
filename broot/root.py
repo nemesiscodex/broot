@@ -71,11 +71,16 @@ class Root:
         for pid in os.listdir("/proc"):
             if pid.isdigit():
                 try:
-                    if os.readlink("/proc/%s/root" % pid) == self.path:
+                    chroot = os.readlink("/proc/%s/root" % pid) == self.path
+                except OSError:
+                    chroot = False
+
+                if chroot:
+                    try:
                         print "Killing %s" % pid
                         os.kill(int(pid), signal.SIGTERM)
-                except OSError, e:
-                    print "Failed: %s" % e
+                    except OSError, e:
+                        print "Failed: %s" % e
 
     def deactivate(self):
         self._kill_processes()
