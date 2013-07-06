@@ -41,7 +41,7 @@ def run(config, command, mirror=None):
 
     root.activate()
     try:
-        root.run("/bin/bash")
+        root.run(command)
     finally:
         root.deactivate()
 
