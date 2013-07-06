@@ -128,7 +128,7 @@ class DebianBuilder:
             raise
 
     def install_packages(self, packages):
-        self._root.run("apt-get update")
-        self._root.run("apt-get dist-upgrade")
+        self._root.run("apt-get update", root=True)
+        self._root.run("apt-get dist-upgrade", root=True)
         self._root.run("apt-get -y --no-install-recommends install %s" %
-                       " ".join(packages))
+                       " ".join(packages), root=True)
