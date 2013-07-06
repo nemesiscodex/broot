@@ -62,12 +62,12 @@ def main():
     create_parser.add_argument("--mirror")
 
     run_parser = subparsers.add_parser("run")
-    run_parser.add_argument("subcommand", nargs="?")
+    run_parser.add_argument("subcommand", nargs="+")
 
     args = parser.parse_args()
     if args.command == "create":
         create(config, args.mirror)
     elif args.command == "run":
-        run(config, args.subcommand)
+        run(config, " ".join(args.subcommand))
     elif args.command == "shell":
         run(config, "/bin/bash")
