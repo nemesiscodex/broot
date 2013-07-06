@@ -33,9 +33,9 @@ def create(config, mirror=None):
         root.deactivate()
 
 
-def run(config, command):
+def run(config, command, mirror=None):
     if not os.path.exists(config["path"]):
-        create(config)
+        create(config, mirror)
 
     root = Root(config)
 
@@ -64,6 +64,7 @@ def main():
     create_parser.add_argument("--mirror")
 
     run_parser = subparsers.add_parser("run")
+    run_parser.add_argument("--mirror")
     run_parser.add_argument("subcommand", nargs="+")
 
     args = parser.parse_args()
