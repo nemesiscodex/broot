@@ -67,6 +67,11 @@ class Root:
                         os.path.join(self.path, "etc", "resolv.conf"))
 
     def deactivate(self):
+        for pid in os.listdir("/proc"):
+            if pid.isdigit():
+                if os.readlink("/proc/%s/root" % pid) == self.path:
+                    os.kill(int(pid), signal.SIGTERM)
+
         for mount_path in reversed(self._mounted):
             check_call(["umount", mount_path])
 
