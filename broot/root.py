@@ -87,6 +87,7 @@ class Root:
 
         self._create_user()
         self._setup_bashrc(os.path.join("home", self._user_name))
+        self._setup_sudo()
 
     def run(self, command, root=False):
         if root:
@@ -121,3 +122,14 @@ class Root:
         with open(os.path.join(self.path, home_path, ".bashrc"), "w") as f:
             for variable, value in environ.items():
                 f.write("export %s=%s\n" % (variable, value))
+
+    def _setup_sudo(self):
+        sudoers_path = "/etc/sudoers"
+
+        with open(sudoers_path) as f:
+            conf = f.read()
+
+        conf = conf + "\n%s ALL=(ALL:ALL) NOPASSWD:ALL" % self._user_name
+
+        with open(sudoers_path, "w") as f:
+            f.write(conf)
