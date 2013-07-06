@@ -69,8 +69,11 @@ class Root:
     def deactivate(self):
         for pid in os.listdir("/proc"):
             if pid.isdigit():
-                if os.readlink("/proc/%s/root" % pid) == self.path:
-                    os.kill(int(pid), signal.SIGTERM)
+                try:
+                    if os.readlink("/proc/%s/root" % pid) == self.path:
+                        os.kill(int(pid), signal.SIGTERM)
+                except OSError:
+                    pass
 
         for mount_path in reversed(self._mounted):
             check_call(["umount", mount_path])
