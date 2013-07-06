@@ -42,7 +42,7 @@ class Root:
         mounts = {}
 
         for source_path, dest_path in self._config.get("mounts", {}).items():
-            mounts[os.path.abspath(source_path)] = dest_path
+            mounts[source_path] = os.path.abspath(dest_path)
 
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
                             "/tmp"]:
