@@ -69,13 +69,13 @@ class Root:
     def install_packages(self, packages):
         self._builder.install_packages(packages)
 
-    def create(self):
+    def create(self, mirror=None):
         try:
             os.makedirs(self.path)
         except OSError:
             pass
 
-        self._builder.create()
+        self._builder.create(mirror)
 
         self._setup_bashrc("root")
 
@@ -93,8 +93,9 @@ class Root:
                    (chroot, self.path, command), shell=True)
 
     def _create_user(self):
-        self.run(["adduser", self._user_name, "--uid", os.environ["SUDO_UID"],
-                  "--gid", os.environ["SUDO_GID"]], root=True)
+        self.run("/usr/sbin/adduser %s --uid %s --gid %s" %
+                 (self._user_name, os.environ["SUDO_UID"],
+                  os.environ["SUDO_GID"]), root=True)
 
     def _setup_bashrc(self, home_path):
         environ = {"LANG": "C"}

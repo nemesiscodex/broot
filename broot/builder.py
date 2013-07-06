@@ -88,7 +88,7 @@ class FedoraBuilder:
         for repo_name in "fedora-updates", "fedora-updates-testing":
             os.unlink(os.path.join(repos_d_path, "%s.repo" % repo_name))
 
-    def create(self):
+    def create(self, mirror=None):
         root_path = self._root.path
 
         release_rpm = "ftp://mirrors.kernel.org/fedora/releases/19/Fedora/" \
@@ -114,11 +114,15 @@ class DebianBuilder:
     def __init__(self, root):
         self._root = root
 
-    def create(self):
+    def create(self, mirror=None):
         root_path = self._root.path
 
         try:
-            check_call(["debootstrap", "jessie", root_path])
+            args = ["debootstrap", "jessie", root_path]
+            if mirror is not None:
+                args.append(mirror)
+
+            check_call(args)
         except (Exception, KeyboardInterrupt):
             shutil.rmtree(root_path)
             raise

@@ -21,10 +21,10 @@ import sys
 from broot.root import Root
 
 
-def create(config):
+def create(config, mirror):
     root = Root(config)
 
-    root.create()
+    root.create(mirror)
 
     root.activate()
     try:
@@ -56,15 +56,17 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
 
-    subparsers.add_parser("create")
     subparsers.add_parser("shell")
+
+    create_parser = subparsers.add_parser("create")
+    create_parser.add_argument("--mirror")
 
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("subcommand", nargs="?")
 
     args = parser.parse_args()
     if args.command == "create":
-        create(config)
+        create(config, args.mirror)
     elif args.command == "run":
         run(config, args.subcommand)
     elif args.command == "shell":
