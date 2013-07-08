@@ -15,6 +15,8 @@
 
 import os
 import shutil
+import tempfile
+import urllib2
 from subprocess import check_call
 
 
@@ -64,9 +66,17 @@ class FedoraBuilder:
 
         release_rpm = "%s/releases/19/Fedora/x86_64/os/Packages/f/" \
                       "fedora-release-19-2.noarch.rpm" % mirror
+
+        temp_dir = tempfile.mkdtemp()
+
+        url_f = urllib2.urlopen(release_rpm)
+        rpm_path = os.path.join(temp_dir, "fedora-release.noarch.rpm")
+        with open(rpm_path, "w") as f:
+            f.write(url_f.read())
+
         try:
             check_call(["rpm", "--root", root_path, "--initdb"])
-            check_call(["rpm", "--root", root_path, "-i", release_rpm])
+            check_call(["rpm", "--root", root_path, "-i", rpm_path])
 
             self._setup_yum(mirror)
 
@@ -74,7 +84,10 @@ class FedoraBuilder:
                         "yum"])
         except (Exception, KeyboardInterrupt):
             shutil.rmtree(root_path)
+            shutil.rmtree(temp_dir)
             raise
+
+        shutil.rmtree(temp_dir)
 
     def install_packages(self, packages):
         self._root.run("yum -y update", as_root=True)
