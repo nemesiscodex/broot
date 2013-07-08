@@ -16,7 +16,6 @@
 import os
 import shutil
 import textwrap
-import urllib2
 from subprocess import check_call
 
 
@@ -28,13 +27,6 @@ class FedoraBuilder:
         yum_etc_path = os.path.join(self._root.path, "etc", "yum")
         os.makedirs(yum_etc_path)
 
-        yum_plugins_path = os.path.join(self._root.path, "usr", "lib",
-                                        "yum-plugins")
-        os.makedirs(yum_plugins_path)
-
-        plugin_conf_path = os.path.join(yum_etc_path, "pluginconf.d")
-        os.makedirs(plugin_conf_path)
-
         yum_conf = """
                       [main]
                       cachedir=/var/cache/yum
@@ -43,30 +35,12 @@ class FedoraBuilder:
                       logfile=/var/log/yum.log
                       exactarch=1
                       obsoletes=1
-                      pluginconfpath=%s
-                      plugins=1""" % plugin_conf_path
+                   """
 
         yum_conf_path = os.path.join(self._root.path, "etc", "yum", "yum.conf")
 
         with open(yum_conf_path, "w") as f:
             f.write(textwrap.dedent(yum_conf))
-
-        response = urllib2.urlopen("https://raw.github.com/toomasp/"
-                                   "yum-plugin-ignoreos/master/"
-                                   "yum_ignoreos.conf")
-
-        ignoreos_conf_path = os.path.join(plugin_conf_path,
-                                          "yum_ignoreos.conf")
-        with open(ignoreos_conf_path, "w") as f:
-            f.write(response.read())
-
-        response = urllib2.urlopen("https://raw.github.com/toomasp/"
-                                   "yum-plugin-ignoreos/master/"
-                                   "yum_ignoreos.py")
-
-        ignoreos_py_path = os.path.join(yum_plugins_path, "yum_ignoreos.conf")
-        with open(ignoreos_py_path, "w") as f:
-            f.write(response.read())
 
         base_url = "ftp://mirrors.kernel.org/fedora/releases/19/Fedora/" \
                    "x86_64/os"
