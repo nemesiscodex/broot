@@ -51,13 +51,9 @@ class FedoraBuilder:
     def _setup_rpm(self):
         db_path = check_output(["rpm", "-E", "%_dbpath"]).strip()
 
-        macro = "%%_dbpath %%(%s)" % db_path
-        macro.replace(os.environ["HOME"], "echo $HOME")
-
-        root_home_dir = os.path.join(self._root.path, "root")
-        rpmmacros_path = os.path.join(root_home_dir, ".rpmmacros")
+        rpmmacros_path = os.path.join(self._root.path, "root", ".rpmmacros")
         with open(rpmmacros_path, "w") as f:
-            f.write(macro)
+            f.write("%%_dbpath %%(%s)" % db_path)
             f.close()
 
     def create(self, mirror=None):
