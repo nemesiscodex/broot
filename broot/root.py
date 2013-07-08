@@ -91,9 +91,15 @@ class Root:
         del self._mounted
 
     def install_packages(self, packages):
-        self._builder.install_packages(packages)
+        flat_packages = []
+        for group in packages.values():
+            for package in group:
+                if package not in flat_packages:
+                    flat_packages.append(package)
 
-        if "sudo" in packages:
+        self._builder.install_packages(flat_packages)
+
+        if "sudo" in flat_packages:
             self._setup_sudo()
 
     def create(self, mirror=None):
