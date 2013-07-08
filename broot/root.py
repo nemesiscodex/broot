@@ -29,6 +29,8 @@ class Root:
         self._config = config
         self._mounts = self._compute_mounts()
         self._user_name = "broot"
+        self._uid = os.environ["SUDO_UID"]
+        self._gid = os.environ["SUDO_GID"]
 
         distro = config.get("distro", "debian")
 
@@ -123,8 +125,7 @@ class Root:
             os.environ["HOME"] = "/root"
         else:
             os.environ["HOME"] = "/home/%s" % self._user_name
-            chroot_command = "chroot --userspec %s:%s" % (
-                self._user_name, self._user_name)
+            chroot_command = "chroot --userspec %s:%s" % (self._uid, self._gid)
 
         check_call("%s %s /bin/bash -lc \"%s\"" %
                    (chroot_command, self.path, command), shell=True)
@@ -135,13 +136,11 @@ class Root:
             del os.environ["HOME"]
 
     def _create_user(self):
-        gid = os.environ["SUDO_GID"]
-
-        self.run("/usr/sbin/groupadd %s --gid %s" % (self._user_name, gid),
-                 as_root=True)
+        self.run("/usr/sbin/groupadd %s --gid %s" %
+                 (self._user_name, self._gid), as_root=True)
 
         self.run("/usr/sbin/useradd %s --uid %s --gid %s" %
-                 (self._user_name, os.environ["SUDO_UID"], gid), as_root=True)
+                 (self._user_name, self._gid, self._uid), as_root=True)
 
     def _setup_bashrc(self, home_path):
         environ = {"LANG": "C"}
