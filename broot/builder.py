@@ -50,7 +50,6 @@ class FedoraBuilder:
 
     def _setup_rpm(self):
         rpmmacros_path = os.path.expanduser("~/.rpmmacros")
-        print rpmmacros_path
         with open(rpmmacros_path, "w") as f:
             f.write("%_dbpath /var/lib/rpm")
             f.close()
