@@ -15,7 +15,7 @@
 
 import os
 import shutil
-from subprocess import check_call
+from subprocess import check_call, check_output
 
 
 class FedoraBuilder:
@@ -48,6 +48,21 @@ class FedoraBuilder:
             with open(repo_path, "w") as f:
                 f.write(conf)
 
+    def _setup_rpm(self):
+        db_path = check_output(["rpm", "-E", "%_dbpath"]).strip()
+        print db_path
+        sys.exit(0)
+        macro = "%%_dbpath %%(%s)" % db_path
+        macro.replace(os.environ["HOME"], "echo $HOME")
+
+        root_home_dir = os.path.join(self._root.path, "root")
+        os.makedirs(root_home_dir)
+
+        rpmmacros_path = os.path.join(root_home_dir, ".rpmmacros")
+        with open(rpmmacros_path, "w") as f:
+            f.write(macro)
+            f.close()
+
     def create(self, mirror=None):
         root_path = self._root.path
 
@@ -60,6 +75,7 @@ class FedoraBuilder:
             check_call(["rpm", "--root", root_path, "--initdb"])
             check_call(["rpm", "--root", root_path, "-i", release_rpm])
 
+            self._setup_rpm()
             self._setup_yum(mirror)
 
             check_call(["yum", "-y", "--installroot", root_path, "install",
