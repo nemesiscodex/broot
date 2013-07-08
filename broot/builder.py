@@ -41,6 +41,9 @@ class FedoraBuilder:
 
                         if line.startswith("mirrorlist"):
                             line = "#" + line
+                    else:
+                        if line.startswith("mirrorlist"):
+                            line.replace("https", "http")
 
                     if line.startswith("gpgkey"):
                         line = "gpgkey=http://fedoraproject.org/" \
