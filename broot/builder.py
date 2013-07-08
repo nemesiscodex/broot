@@ -50,8 +50,7 @@ class FedoraBuilder:
 
     def _setup_rpm(self):
         db_path = check_output(["rpm", "-E", "%_dbpath"]).strip()
-        print db_path
-        sys.exit(0)
+
         macro = "%%_dbpath %%(%s)" % db_path
         macro.replace(os.environ["HOME"], "echo $HOME")
 
@@ -81,7 +80,7 @@ class FedoraBuilder:
             check_call(["yum", "-y", "--installroot", root_path, "install",
                         "yum"])
         except (Exception, KeyboardInterrupt):
-            #shutil.rmtree(root_path)
+            shutil.rmtree(root_path)
             raise
 
     def install_packages(self, packages):
