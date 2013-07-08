@@ -33,13 +33,14 @@ class FedoraBuilder:
             with open(repo_path) as f:
                 conf = ""
                 for line in f.readlines():
-                    if line.startswith("#baseurl"):
-                        line = line[1:]
-                        line.replace("http://download.fedoraproject.org"
-                                     "/pub/fedora/linux", mirror)
+                    if mirror is not None:
+                        if line.startswith("#baseurl"):
+                            line = line[1:]
+                            line.replace("http://download.fedoraproject.org"
+                                         "/pub/fedora/linux", mirror)
 
-                    if line.startswith("mirrorlist"):
-                        line = "#" + line
+                        if line.startswith("mirrorlist"):
+                            line = "#" + line
 
                     if line.startswith("gpgkey"):
                         line = "gpgkey=http://fedoraproject.org/" \
