@@ -31,8 +31,7 @@ class FedoraBuilder:
                       "fedora-release-19-2.noarch.rpm" % mirror
         try:
             check_call(["rpm", "--root", root_path, "--initdb"])
-            check_call(["rpm", "--root", root_path, "--ignoreos", "-i",
-                        release_rpm])
+            check_call(["rpm", "--root", root_path, "-i", release_rpm])
 
             check_call(["yum", "-y", "--installroot", root_path, "install",
                         "yum"])
