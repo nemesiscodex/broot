@@ -36,14 +36,16 @@ class FedoraBuilder:
                     if mirror is not None:
                         if line.startswith("#baseurl"):
                             line = line[1:]
-                            line.replace("http://download.fedoraproject.org"
-                                         "/pub/fedora/linux", mirror)
+                            base_url = "http://download.fedoraproject.org" \
+                                       "/pub/fedora/linux"
+                            line = line.replace(base_url, mirror)
 
                         if line.startswith("mirrorlist"):
                             line = "#" + line
                     else:
+                        # Work around for debian bug #715416
                         if line.startswith("mirrorlist"):
-                            line.replace("https", "http")
+                            line = line.replace("https", "http")
 
                     if line.startswith("gpgkey"):
                         line = "gpgkey=http://fedoraproject.org/" \
