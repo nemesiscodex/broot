@@ -62,11 +62,11 @@ class FedoraBuilder:
         for repo_name in "fedora-updates", "fedora-updates-testing":
             os.unlink(os.path.join(repos_d_path, "%s.repo" % repo_name))
 
-    def create(self, mirror=None):
+    def create(self, mirror="ftp://mirrors.kernel.org/fedora"):
         root_path = self._root.path
 
-        release_rpm = "ftp://mirrors.kernel.org/fedora/releases/19/Fedora/" \
-                      "x86_64/os/Packages/f/fedora-release-19-2.noarch.rpm"
+        release_rpm = "%s/releases/19/Fedora/x86_64/os/Packages/f/" \
+                      "fedora-release-19-2.noarch.rpm" % mirror
         try:
             check_call(["rpm", "--root", root_path, "--initdb"])
             check_call(["rpm", "--root", root_path, "--ignoreos", "-i",
