@@ -109,10 +109,10 @@ class Root:
         self._create_user()
         self._setup_bashrc(os.path.join("home", self._user_name))
 
-    def run(self, command, root=False):
+    def run(self, command, as_root=False):
         orig_home = os.environ.get("HOME", None)
 
-        if root:
+        if as_root:
             chroot_command = "chroot"
             os.environ["HOME"] = "/root"
         else:
@@ -132,10 +132,10 @@ class Root:
         gid = os.environ["SUDO_GID"]
 
         self.run("/usr/sbin/groupadd %s --gid %s" % (self._user_name, gid),
-                 root=True)
+                 as_root=True)
 
         self.run("/usr/sbin/useradd %s --uid %s --gid %s" %
-                 (self._user_name, os.environ["SUDO_UID"], gid), root=True)
+                 (self._user_name, os.environ["SUDO_UID"], gid), as_root=True)
 
     def _setup_bashrc(self, home_path):
         environ = {"LANG": "C"}

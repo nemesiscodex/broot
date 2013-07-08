@@ -77,8 +77,9 @@ class FedoraBuilder:
             raise
 
     def install_packages(self, packages):
-        self._root.run("yum -y update", root=True)
-        self._root.run("yum -v -y install %s" % " ".join(packages), root=True)
+        self._root.run("yum -y update", as_root=True)
+        self._root.run("yum -v -y install %s" % " ".join(packages),
+                       as_root=True)
 
 
 class DebianBuilder:
@@ -99,7 +100,7 @@ class DebianBuilder:
             raise
 
     def install_packages(self, packages):
-        self._root.run("apt-get update", root=True)
-        self._root.run("apt-get dist-upgrade", root=True)
+        self._root.run("apt-get update", as_root=True)
+        self._root.run("apt-get dist-upgrade", as_root=True)
         self._root.run("apt-get -y --no-install-recommends install %s" %
-                       " ".join(packages), root=True)
+                       " ".join(packages), as_root=True)

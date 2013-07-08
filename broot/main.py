@@ -33,7 +33,7 @@ def create(config, mirror=None):
         root.deactivate()
 
 
-def run(config, command, mirror=None, root=False):
+def run(config, command, mirror=None, as_root=False):
     if not os.path.exists(config["path"]):
         create(config, mirror)
 
@@ -41,7 +41,7 @@ def run(config, command, mirror=None, root=False):
 
     root.activate()
     try:
-        root.run(command, root=root)
+        root.run(command, as_root=as_root)
     finally:
         root.deactivate()
 
@@ -73,6 +73,6 @@ def main():
     if args.command == "create":
         create(config, args.mirror)
     elif args.command == "run":
-        run(config, " ".join(args.subcommand), args.mirror, root=args.root)
+        run(config, " ".join(args.subcommand), args.mirror, as_root=args.root)
     elif args.command == "shell":
-        run(config, "/bin/bash", root=args.root)
+        run(config, "/bin/bash", as_root=args.root)
