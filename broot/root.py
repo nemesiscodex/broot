@@ -129,11 +129,10 @@ class Root:
     def _create_user(self):
         gid = os.environ["SUDO_GID"]
 
-        self.run("/usr/sbin/addgroup %s --gid %s" % (self._user_name, gid),
+        self.run("/usr/sbin/groupadd %s --gid %s" % (self._user_name, gid),
                  root=True)
 
-        self.run("/usr/sbin/adduser %s --uid %s --gid %s "
-                 "--disabled-password --gecos ''" %
+        self.run("/usr/sbin/useradd %s --uid %s --gid %s" %
                  (self._user_name, os.environ["SUDO_UID"], gid), root=True)
 
     def _setup_bashrc(self, home_path):

@@ -39,6 +39,10 @@ class FedoraBuilder:
                     if line.startswith("mirrorlist"):
                         line = "#" + line
 
+                    if line.startswith("gpgkey"):
+                        line = "gpgkey=http://fedoraproject.org/" \
+                               "static/FB4B18E6.txt"
+
                     conf = conf + line
 
             with open(repo_path, "w") as f:
@@ -56,10 +60,6 @@ class FedoraBuilder:
             check_call(["rpm", "--root", root_path, "--initdb"])
             check_call(["rpm", "--root", root_path, "-i", release_rpm])
 
-            gpg_key = os.path.join(root_path, "etc", "pki", "rpm-gpg",
-                                   "RPM-GPG-KEY-fedora-x86_64")
-            check_call(["rpm", "--import", gpg_key])
-
             self._setup_yum(mirror)
 
             check_call(["yum", "-y", "--installroot", root_path, "install",
@@ -69,8 +69,8 @@ class FedoraBuilder:
             raise
 
     def install_packages(self, packages):
-        self._root.run("yum -y update")
-        self._root.run("yum -v -y install %s" % " ".join(packages))
+        self._root.run("yum -y update", root=True)
+        self._root.run("yum -v -y install %s" % " ".join(packages), root=True)
 
 
 class DebianBuilder:
