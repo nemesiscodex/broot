@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import shutil
 from subprocess import check_call
 
@@ -20,6 +21,28 @@ from subprocess import check_call
 class FedoraBuilder:
     def __init__(self, root):
         self._root = root
+
+    def _setup_yum(self, mirror):
+        for repo_name in ["fedora", "fedora-updates",
+                          "fedora-updates-testing"]:
+            repo_path = os.path.join(self._root.path, "etc", "yum.repos.d",
+                                     "%s.repo" % repo_name)
+
+            with open(repo_path) as f:
+                conf = ""
+                for line in f.readlines():
+                    if line.startswith("#baseurl"):
+                        line = line[1:]
+                        line.replace("http://download.fedoraproject.org"
+                                     "/pub/fedora/linux", mirror)
+
+                    if line.startswith("mirrorlist"):
+                        line = "#" + line
+
+                    conf = conf + line
+
+            with open(repo_path, "w") as f:
+                f.write(conf)
 
     def create(self, mirror=None):
         root_path = self._root.path
@@ -33,10 +56,12 @@ class FedoraBuilder:
             check_call(["rpm", "--root", root_path, "--initdb"])
             check_call(["rpm", "--root", root_path, "-i", release_rpm])
 
+            self._setup_yum(mirror)
+
             check_call(["yum", "-y", "--installroot", root_path, "install",
                         "yum"])
         except (Exception, KeyboardInterrupt):
-            shutil.rmtree(root_path)
+            #shutil.rmtree(root_path)
             raise
 
     def install_packages(self, packages):
