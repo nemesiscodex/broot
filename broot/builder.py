@@ -56,6 +56,10 @@ class FedoraBuilder:
             check_call(["rpm", "--root", root_path, "--initdb"])
             check_call(["rpm", "--root", root_path, "-i", release_rpm])
 
+            gpg_key = os.path.join(root_path, "etc", "pki", "rpm-gpg",
+                                   "RPM-GPG-KEY-fedora-x86_64")
+            check_call(["rpm", "--import", gpg_key])
+
             self._setup_yum(mirror)
 
             check_call(["yum", "-y", "--installroot", root_path, "install",
