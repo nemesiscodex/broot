@@ -110,21 +110,23 @@ class Root:
         self._setup_bashrc(os.path.join("home", self._user_name))
 
     def run(self, command, root=False):
+        orig_home = os.environ.get("HOME", None)
+
         if root:
-            orig_home = None
-            chroot = "chroot"
+            chroot_command = "chroot"
+            os.environ["HOME"] = "/root"
         else:
-            orig_home = os.environ["HOME"]
-            chroot = "chroot --userspec %s:%s" % (
+            os.environ["HOME"] = "/home/%s" % self._user_name
+            chroot_command = "chroot --userspec %s:%s" % (
                 self._user_name, self._user_name)
 
-        os.environ["HOME"] = "/home/%s" % self._user_name
-
         check_call("%s %s /bin/bash -lc \"%s\"" %
-                   (chroot, self.path, command), shell=True)
+                   (chroot_command, self.path, command), shell=True)
 
         if orig_home:
             os.environ["HOME"] = orig_home
+        elif "HOME" in os.environ:
+            del os.environ["HOME"]
 
     def _create_user(self):
         gid = os.environ["SUDO_GID"]

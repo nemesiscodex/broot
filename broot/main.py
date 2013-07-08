@@ -33,7 +33,7 @@ def create(config, mirror=None):
         root.deactivate()
 
 
-def run(config, command, mirror=None):
+def run(config, command, mirror=None, root=False):
     if not os.path.exists(config["path"]):
         create(config, mirror)
 
@@ -41,7 +41,7 @@ def run(config, command, mirror=None):
 
     root.activate()
     try:
-        root.run(command)
+        root.run(command, root=root)
     finally:
         root.deactivate()
 
@@ -58,19 +58,21 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
 
-    subparsers.add_parser("shell")
+    shell_parser = subparsers.add_parser("shell")
+    shell_parser.add_argument("--root", action="store_true")
 
     create_parser = subparsers.add_parser("create")
     create_parser.add_argument("--mirror")
 
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("--mirror")
+    run_parser.add_argument("--root", action="store_true")
     run_parser.add_argument("subcommand", nargs="+")
 
     args = parser.parse_args()
     if args.command == "create":
         create(config, args.mirror)
     elif args.command == "run":
-        run(config, " ".join(args.subcommand), args.mirror)
+        run(config, " ".join(args.subcommand), args.mirror, root=args.root)
     elif args.command == "shell":
-        run(config, "/bin/bash")
+        run(config, "/bin/bash", root=args.root)

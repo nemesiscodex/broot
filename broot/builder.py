@@ -53,7 +53,7 @@ class FedoraBuilder:
 
         rpmmacros_path = os.path.join(self._root.path, "root", ".rpmmacros")
         with open(rpmmacros_path, "w") as f:
-            f.write("%%_dbpath %%(%s)" % db_path)
+            f.write("%%_dbpath %s" % db_path)
             f.close()
 
     def create(self, mirror=None):
