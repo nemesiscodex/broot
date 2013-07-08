@@ -55,8 +55,6 @@ class FedoraBuilder:
         macro.replace(os.environ["HOME"], "echo $HOME")
 
         root_home_dir = os.path.join(self._root.path, "root")
-        os.makedirs(root_home_dir)
-
         rpmmacros_path = os.path.join(root_home_dir, ".rpmmacros")
         with open(rpmmacros_path, "w") as f:
             f.write(macro)
