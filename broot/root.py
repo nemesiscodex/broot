@@ -61,7 +61,7 @@ class Root:
         mount_output = check_output(["mount"]).strip()
         for mounted in mount_output.split("\n"):
             mount_points.append(mounted.split(" ")[2])
-        print mount_points
+
         return mount_points
 
     def activate(self):
@@ -102,7 +102,9 @@ class Root:
             if mount_path in mounted:
                 check_call(["umount", mount_path])
 
-    def install_packages(self):
+    def update_packages(self):
+        self._builder.update_packages()
+
         flat_packages = []
         for group in self._config["packages"].values():
             for package in group:
@@ -113,6 +115,9 @@ class Root:
 
         if "sudo" in flat_packages:
             self._setup_sudo()
+
+    def _get_stamp_path(self):
+        return self.path + ".stamp"
 
     def create(self, mirror=None):
         try:
@@ -129,9 +134,35 @@ class Root:
 
         self.activate()
         try:
-            self.install_packages()
+            self.update_packages()
         finally:
             self.deactivate()
+
+        with open(self._get_stamp_path(), "w") as f:
+            stamp = self._config.get("stamp", "")
+            f.write(stamp)
+            f.close()
+
+    def update(self):
+        try:
+            with open(self._get_stamp_path()) as f:
+                stamp = f.read()
+        except IOError:
+            stamp = ""
+
+        if stamp == self._config.get("stamp", ""):
+            self.activate()
+            try:
+                self.update_packages()
+            finally:
+                self.deactivate()
+        else:
+            self.clean()
+            self.create()
+
+    def clean(self):
+        self.deactivate()
+        shutil.rmtree(self.path, ignore_errors=True)
 
     def run(self, command, as_root=False):
         orig_home = os.environ.get("HOME", None)

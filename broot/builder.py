@@ -96,8 +96,10 @@ class FedoraBuilder:
 
         shutil.rmtree(temp_dir)
 
-    def install_packages(self, packages):
+    def update_packages(self):
         self._root.run("yum -y update", as_root=True)
+
+    def install_packages(self, packages):
         self._root.run("yum -v -y install %s" % " ".join(packages),
                        as_root=True)
 
@@ -119,8 +121,10 @@ class DebianBuilder:
             shutil.rmtree(root_path)
             raise
 
-    def install_packages(self, packages):
+    def update_packages(self):
         self._root.run("apt-get update", as_root=True)
         self._root.run("apt-get dist-upgrade", as_root=True)
+
+    def install_packages(self, packages):
         self._root.run("apt-get -y --no-install-recommends install %s" %
                        " ".join(packages), as_root=True)

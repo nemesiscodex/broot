@@ -26,6 +26,16 @@ def create(config, mirror=None):
     root.create(mirror)
 
 
+def update(config):
+    root = Root(config)
+    root.update()
+
+
+def clean(config):
+    root = Root(config)
+    root.clean()
+
+
 def run(config, command, mirror=None, as_root=False):
     if not os.path.exists(config["path"]):
         create(config, mirror)
@@ -62,6 +72,9 @@ def main():
     run_parser.add_argument("--root", action="store_true")
     run_parser.add_argument("subcommand", nargs="+")
 
+    subparsers.add_parser("update")
+    subparsers.add_parser("clean")
+
     args = parser.parse_args()
     if args.command == "create":
         create(config, args.mirror)
@@ -69,3 +82,7 @@ def main():
         run(config, " ".join(args.subcommand), args.mirror, as_root=args.root)
     elif args.command == "shell":
         run(config, "/bin/bash", as_root=args.root)
+    elif args.command == "update":
+        update(config)
+    elif args.command == "clean":
+        clean(config)
