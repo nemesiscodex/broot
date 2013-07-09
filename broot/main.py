@@ -70,19 +70,18 @@ def main():
     run_parser = subparsers.add_parser("run")
     run_parser.add_argument("--mirror")
     run_parser.add_argument("--root", action="store_true")
-    run_parser.add_argument("subcommand", nargs="+")
 
     subparsers.add_parser("update")
     subparsers.add_parser("clean")
 
-    args = parser.parse_args()
-    if args.command == "create":
-        create(config, args.mirror)
-    elif args.command == "run":
-        run(config, " ".join(args.subcommand), args.mirror, as_root=args.root)
-    elif args.command == "shell":
-        run(config, "/bin/bash", as_root=args.root)
-    elif args.command == "update":
+    options, other_args = parser.parse_known_args()
+    if options.command == "create":
+        create(config, options.mirror)
+    elif options.command == "run":
+        run(config, " ".join(other_args), options.mirror, as_root=options.root)
+    elif options.command == "shell":
+        run(config, "/bin/bash", as_root=options.root)
+    elif options.command == "update":
         update(config)
-    elif args.command == "clean":
+    elif options.command == "clean":
         clean(config)
