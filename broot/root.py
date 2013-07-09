@@ -164,6 +164,11 @@ class Root:
         self.deactivate()
         shutil.rmtree(self.path, ignore_errors=True)
 
+        try:
+            os.unlink(self._get_stamp_path())
+        except OSError:
+            pass
+
     def run(self, command, as_root=False):
         orig_home = os.environ.get("HOME", None)
 
