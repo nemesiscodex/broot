@@ -23,14 +23,7 @@ from broot.root import Root
 
 def create(config, mirror=None):
     root = Root(config)
-
     root.create(mirror)
-
-    root.activate()
-    try:
-        root.install_packages(config["packages"])
-    finally:
-        root.deactivate()
 
 
 def run(config, command, mirror=None, as_root=False):

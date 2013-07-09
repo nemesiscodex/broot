@@ -92,9 +92,9 @@ class Root:
 
         del self._mounted
 
-    def install_packages(self, packages):
+    def install_packages(self):
         flat_packages = []
-        for group in packages.values():
+        for group in self._config["packages"].values():
             for package in group:
                 if package not in flat_packages:
                     flat_packages.append(package)
@@ -116,6 +116,12 @@ class Root:
 
         self._create_user()
         self._setup_bashrc(os.path.join("home", self._user_name))
+
+        self.activate()
+        try:
+            self.install_packages()
+        finally:
+            self.deactivate()
 
     def run(self, command, as_root=False):
         orig_home = os.environ.get("HOME", None)
