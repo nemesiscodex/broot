@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
 import os
 import signal
 import shutil
-from subprocess import check_call
+from subprocess import check_call, check_output
 
 from broot.builder import FedoraBuilder
 from broot.builder import DebianBuilder
@@ -42,7 +43,7 @@ class Root:
             raise ValueError("Unknown distro %s" % distro)
 
     def _compute_mounts(self):
-        mounts = {}
+        mounts = collections.OrderedDict()
 
         for source_path, dest_path in self._config.get("mounts", {}).items():
             full_dest_path = os.path.join(self.path, dest_path)
@@ -54,8 +55,17 @@ class Root:
 
         return mounts
 
+    def _get_mounted(self):
+        mount_points = []
+
+        mount_output = check_output(["mount"]).strip()
+        for mounted in mount_output.split("\n"):
+            mount_points.append(mounted.split(" ")[2])
+        print mount_points
+        return mount_points
+
     def activate(self):
-        self._mounted = []
+        mounted = self._get_mounted()
 
         for source_path, dest_path in self._mounts.items():
             try:
@@ -63,8 +73,8 @@ class Root:
             except OSError:
                 pass
 
-            check_call(["mount", "--bind", source_path, dest_path])
-            self._mounted.append(dest_path)
+            if dest_path not in mounted:
+                check_call(["mount", "--bind", source_path, dest_path])
 
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
                         os.path.join(self.path, "etc", "resolv.conf"))
@@ -87,10 +97,10 @@ class Root:
     def deactivate(self):
         self._kill_processes()
 
-        for mount_path in reversed(self._mounted):
-            check_call(["umount", mount_path])
-
-        del self._mounted
+        mounted = self._get_mounted()
+        for mount_path in reversed(self._mounts.values()):
+            if mount_path in mounted:
+                check_call(["umount", mount_path])
 
     def install_packages(self):
         flat_packages = []
