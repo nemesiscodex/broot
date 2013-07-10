@@ -14,33 +14,29 @@
 # limitations under the License.
 
 import argparse
-import json
 import os
 import sys
 
 from broot.root import Root
 
 
-def create(config, mirror=None):
-    root = Root(config)
+def create(mirror=None):
+    root = Root()
     root.create(mirror)
 
 
-def update(config):
-    root = Root(config)
+def update():
+    root = Root()
     root.update()
 
 
-def clean(config):
-    root = Root(config)
+def clean():
+    root = Root()
     root.clean()
 
 
-def run(config, command, mirror=None, as_root=False):
-    if not os.path.exists(config["path"]):
-        create(config, mirror)
-
-    root = Root(config)
+def run(command, mirror=None, as_root=False):
+    root = Root()
 
     root.activate()
     try:
@@ -54,9 +50,6 @@ def main():
         sys.exit("You must run the command as root")
 
     os.environ["BROOT"] = "yes"
-
-    with open("root.json") as f:
-        config = json.load(f)
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
@@ -76,12 +69,12 @@ def main():
 
     options, other_args = parser.parse_known_args()
     if options.command == "create":
-        create(config, options.mirror)
+        create(options.mirror)
     elif options.command == "run":
-        run(config, " ".join(other_args), options.mirror, as_root=options.root)
+        run(" ".join(other_args), options.mirror, as_root=options.root)
     elif options.command == "shell":
-        run(config, "/bin/bash", as_root=options.root)
+        run("/bin/bash", as_root=options.root)
     elif options.command == "update":
-        update(config)
+        update()
     elif options.command == "clean":
-        clean(config)
+        clean()

@@ -13,7 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
+import hashlib
 import collections
+import json
 import os
 import signal
 import shutil
@@ -24,16 +27,20 @@ from broot.builder import DebianBuilder
 
 
 class Root:
-    def __init__(self, config):
-        self.path = os.path.abspath(config["path"])
+    def __init__(self):
+        self._config_path = os.path.abspath("root.json")
 
-        self._config = config
+        with open(self._config_path) as f:
+            self._config = json.load(f)
+
+        self.path = self._compute_path()
+
         self._mounts = self._compute_mounts()
         self._user_name = "broot"
         self._uid = os.environ["SUDO_UID"]
         self._gid = os.environ["SUDO_GID"]
 
-        distro = config.get("distro", "debian")
+        distro = self._config.get("distro", "debian")
 
         if distro == "debian":
             self._builder = DebianBuilder(self)
@@ -41,6 +48,14 @@ class Root:
             self._builder = FedoraBuilder(self)
         else:
             raise ValueError("Unknown distro %s" % distro)
+
+    def _compute_path(self):
+        path_hash = hashlib.sha1()
+        path_hash.update(self._config_path)
+        base64_hash = base64.urlsafe_b64encode(path_hash.digest())
+
+        return os.path.join("/var", "lib", "broot", "%s-%s" %
+                            (self._config["name"], base64_hash[0:5]))
 
     def _compute_mounts(self):
         mounts = collections.OrderedDict()
