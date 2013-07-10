@@ -49,7 +49,8 @@ class Root:
             full_dest_path = os.path.join(self.path, dest_path)
             mounts[os.path.abspath(source_path)] = full_dest_path
 
-        for source_path in ["/dev", "/dev/pts", "/sys", "/proc", "/tmp"]:
+        for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
+                            "/tmp"]:
             mounts[source_path] = os.path.join(self.path, source_path[1:])
 
         return mounts
