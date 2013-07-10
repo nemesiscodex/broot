@@ -30,6 +30,14 @@ def update():
     root.update()
 
 
+def exists():
+    root = Root()
+    if os.path.exists(root.path):
+        sys.exit(0)
+    else:
+        sys.exit(1)
+
+
 def clean():
     root = Root()
     root.clean()
@@ -64,6 +72,7 @@ def main():
     run_parser.add_argument("--mirror")
     run_parser.add_argument("--root", action="store_true")
 
+    subparsers.add_parser("exists")
     subparsers.add_parser("update")
     subparsers.add_parser("clean")
 
@@ -76,5 +85,7 @@ def main():
         run("/bin/bash", as_root=options.root)
     elif options.command == "update":
         update()
+    elif options.command == "exists":
+        exists()
     elif options.command == "clean":
         clean()
