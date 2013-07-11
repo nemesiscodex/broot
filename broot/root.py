@@ -65,7 +65,7 @@ class Root:
             mounts[os.path.abspath(source_path)] = full_dest_path
 
         for source_path in ["/dev", "/dev/pts", "/dev/shm", "/sys", "/proc",
-                            "/tmp"]:
+                            "/tmp", "/var/run/dbus"]:
             mounts[source_path] = os.path.join(self.path, source_path[1:])
 
         return mounts
@@ -89,6 +89,11 @@ class Root:
                 pass
 
             if dest_path not in mounted:
+                try:
+                    os.makedirs(dest_path)
+                except OSError:
+                    pass
+
                 check_call(["mount", "--bind", source_path, dest_path])
 
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
