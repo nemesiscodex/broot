@@ -158,10 +158,10 @@ class Root:
 
         self._builder.create(mirror)
 
-        self._setup_bashrc("root")
+        self._setup_root_bashrc()
 
         self._create_user()
-        self._setup_bashrc(os.path.join("home", self._user_name))
+        self._setup_user_bashrc()
 
         self.activate()
         try:
@@ -225,12 +225,26 @@ class Root:
         self.run("/usr/sbin/useradd %s --uid %s --gid %s" %
                  (self._user_name, self._gid, self._uid), as_root=True)
 
-    def _setup_bashrc(self, home_path):
+    def _setup_bashrc(self, home_path, extra=None):
         environ = {"LANG": "C"}
 
         with open(os.path.join(self.path, home_path, ".bashrc"), "w") as f:
             for variable, value in environ.items():
                 f.write("export %s=%s\n" % (variable, value))
+                if extra:
+                    f.write(extra)
+
+    def _setup_root_bashrc(self):
+        self._setup_bashrc("root")
+
+    def _setup_user_bashrc(self):
+        shell_path = self._config.get("shell_path", None)
+        if shell_path:
+            extra = "cd %s" % shell_path
+        else:
+            extra = None
+
+        self._setup_bashrc(os.path.join("home", self._user_name), extra)
 
     def _setup_sudo(self):
         sudoers_path = os.path.join(self.path, "etc", "sudoers")
