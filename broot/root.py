@@ -264,10 +264,11 @@ class Root:
 
         name = self._config["name"]
 
-        transform = "--transform='s,^%s,%s,'" % (self.path[1:], name)
+        options = "--transform='s,^%s,%s,' " \
+                  "--one-file-system" % (self.path[1:], name)
 
         check_call("tar cvfJ %s-broot.tar.xz %s %s" %
-                   (name, transform, self.path), shell=True)
+                   (name, options, self.path), shell=True)
 
         return True
 
