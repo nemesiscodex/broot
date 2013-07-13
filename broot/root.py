@@ -244,6 +244,12 @@ class Root:
 
         last = urllib2.urlopen(prebuilt_url + "last").read().strip()
 
+        try:
+            os.makedirs(self._var_dir)
+        except OSError:
+            pass
+
+
         os.chdir(self._var_dir)
 
         tar_path = os.path.join(self._var_dir, "tmp.tar.xz")
