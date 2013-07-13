@@ -22,6 +22,7 @@ import signal
 import shutil
 import urlgrabber
 import urllib2
+from urlgrabber.progress import TextProgress
 from subprocess import check_call, check_output
 
 from broot.builder import FedoraBuilder
@@ -254,7 +255,8 @@ class Root:
         tar_path = os.path.join(self._var_dir, "tmp.tar.xz")
 
         try:
-            urlgrabber.urlgrab(prebuilt_url + last, tar_path)
+            urlgrabber.urlgrab(prebuilt_url + last, tar_path,
+                               progress_obj=TextProgress())
 
             from_path = "%s.{%d}" % (self.path[1:self.path.rindex("-")],
                                      self._hash_len)
