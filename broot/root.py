@@ -20,7 +20,6 @@ import json
 import os
 import signal
 import shutil
-import tarfile
 import urlgrabber
 import urllib2
 from subprocess import check_call, check_output
@@ -247,17 +246,7 @@ class Root:
 
         try:
             urlgrabber.urlgrab(prebuilt_url + last, tar_path)
-            check_call(["unxz", "-v", tar_path])
-        except Exception, e:
-            os.unlink(tar_path)
-            raise e
-
-        tar_path = os.path.join(self._var_dir, "temp.tar")
-
-        try:
-            tar = tarfile.open(tar_path)
-            tar.extractall(self._var_dir)
-            tar.close()
+            check_call(["tar", "xvfJ", tar_path])
         except Exception, e:
             os.unlink(tar_path)
             raise e
@@ -273,14 +262,8 @@ class Root:
         if not self._check_exists(True):
             return False
 
-        name = self._config["name"]
-
-        filename = "%s-broot.tar" % name
-        tar = tarfile.open(filename, mode="w")
-        tar.add(self.path, name)
-        tar.close()
-
-        check_call(["xz", "-v", filename])
+        check_call(["tar", "cvjJ", "%s-broot.tar" % self._config["name"],
+                    self.path])
 
         return True
 
