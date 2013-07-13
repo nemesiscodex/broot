@@ -258,9 +258,9 @@ class Root:
             urlgrabber.urlgrab(prebuilt_url + last, tar_path,
                                progress_obj=TextMeter())
 
-            from_path = "%s.{%d}" % (self.path[1:self.path.rindex("-")],
-                                     self._hash_len)
-            to_path = os.path.dirname(self.path)
+            from_path = "%s-.{%d}" % (self.path[1:self.path.rindex("-")],
+                                      self._hash_len)
+            to_path = os.path.basename(self.path)
 
             check_call("tar --xz --transform 's,^%s,%s,x' -xvf %s" %
                        (from_path, to_path, tar_path), shell=True)
