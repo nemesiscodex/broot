@@ -249,7 +249,6 @@ class Root:
         except OSError:
             pass
 
-
         os.chdir(self._var_dir)
 
         tar_path = os.path.join(self._var_dir, "tmp.tar.xz")
@@ -261,9 +260,8 @@ class Root:
                                      self._hash_len)
             to_path = os.path.dirname(self.path)
 
-            check_call(["tar", "--transform",
-                        "'s,^%s,%s,x'" % (from_path, to_path),
-                        "-xvf", tar_path], shell=True)
+            check_call("tar --transform 's,^%s,%s,x' xvfJ %s" %
+                       (from_path, to_path, tar_path), shell=True)
         except Exception, e:
             os.unlink(tar_path)
             raise e
