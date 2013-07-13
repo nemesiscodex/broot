@@ -42,6 +42,7 @@ class Root:
         self._user_name = "broot"
         self._uid = os.environ["SUDO_UID"]
         self._gid = os.environ["SUDO_GID"]
+        self._hash_len = 5
 
         distro = self._config.get("distro", "debian")
 
@@ -58,7 +59,8 @@ class Root:
         base64_hash = base64.urlsafe_b64encode(path_hash.digest())
 
         return os.path.join(self._var_dir, "%s-%s" %
-                            (self._config["name"], base64_hash[0:5]))
+                            (self._config["name"],
+                            base64_hash[0:self._hash_len]))
 
     def _compute_mounts(self):
         mounts = collections.OrderedDict()
@@ -242,22 +244,23 @@ class Root:
 
         last = urllib2.urlopen(prebuilt_url + "last").read().strip()
 
+        os.chdir(self._var_dir)
+
         tar_path = os.path.join(self._var_dir, "tmp.tar.xz")
 
         try:
             urlgrabber.urlgrab(prebuilt_url + last, tar_path)
 
-            path = self.path[1:self.path.rindex("-")] + ".{5}"
+            from_path = "%s.{%d}" % (self.path[1:self.path.rindex("-")],
+                                     self._hash_len)
+            to_path = os.path.dirname(self.path)
 
             check_call(["tar", "--transform",
-                        "'s,^%s,%s,x'" % (path, self._config["name"]),
+                        "'s,^%s,%s,x'" % (from_path, to_path),
                         "-xvf", tar_path])
         except Exception, e:
             os.unlink(tar_path)
             raise e
-
-        extracted_dir = os.path.join(self._var_dir, self._config["name"])
-        shutil.move(extracted_dir, self.path)
 
         os.unlink(tar_path)
 
