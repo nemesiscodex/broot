@@ -20,32 +20,14 @@ import sys
 from broot.root import Root
 
 
-def create(mirror=None):
-    root = Root()
-    root.create(mirror)
-
-
-def update():
-    root = Root()
-    root.update()
-
-
-def exists():
-    root = Root()
+def exists(root):
     if os.path.exists(root.path):
         sys.exit(0)
     else:
         sys.exit(1)
 
 
-def clean():
-    root = Root()
-    root.clean()
-
-
-def run(command, mirror=None, as_root=False):
-    root = Root()
-
+def run(root, command, mirror=None, as_root=False):
     root.activate()
     try:
         root.run(command, as_root=as_root)
@@ -74,18 +56,23 @@ def main():
 
     subparsers.add_parser("exists")
     subparsers.add_parser("update")
+    subparsers.add_parser("distribute")
     subparsers.add_parser("clean")
+
+    root = Root()
 
     options, other_args = parser.parse_known_args()
     if options.command == "create":
-        create(options.mirror)
+        root.create(options.mirror)
     elif options.command == "run":
-        run(" ".join(other_args), options.mirror, as_root=options.root)
+        run(root, " ".join(other_args), options.mirror, as_root=options.root)
     elif options.command == "shell":
         run("/bin/bash", as_root=options.root)
     elif options.command == "update":
-        update()
+        root.update()
     elif options.command == "exists":
-        exists()
+        exists(root)
     elif options.command == "clean":
-        clean()
+        root.clean()
+    elif options.command == "distribute":
+        root.distribute()

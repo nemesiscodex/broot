@@ -20,6 +20,8 @@ import json
 import os
 import signal
 import shutil
+import tarfile
+import time
 from subprocess import check_call, check_output
 
 from broot.builder import FedoraBuilder
@@ -166,6 +168,7 @@ class Root:
         self.activate()
         try:
             self.update_packages()
+            self._builder.clean_packages()
         finally:
             self.deactivate()
 
@@ -199,6 +202,14 @@ class Root:
             os.unlink(self._get_stamp_path())
         except OSError:
             pass
+
+    def distribute(self):
+        name = self._config["name"]
+        timestamp = int(time.time())
+
+        tar = tarfile.open("%s-%s.tar" % (name, timestamp), mode="w")
+        tar.add(self.path, name)
+        tar.close()
 
     def run(self, command, as_root=False):
         orig_home = os.environ.get("HOME", None)
