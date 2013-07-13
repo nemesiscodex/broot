@@ -38,11 +38,11 @@ class Root:
 
         self.path = self._compute_path()
 
+        self._hash_len = 5
         self._mounts = self._compute_mounts()
         self._user_name = "broot"
         self._uid = os.environ["SUDO_UID"]
         self._gid = os.environ["SUDO_GID"]
-        self._hash_len = 5
 
         distro = self._config.get("distro", "debian")
 
