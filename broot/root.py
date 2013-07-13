@@ -242,11 +242,14 @@ class Root:
 
         last = urllib2.urlopen(prebuilt_url + "last").read().strip()
 
-        tar_path = os.path.join(self._var_dir, "temp.tar.xz")
+        tar_path = os.path.join(self._var_dir, "tmp.tar.xz")
 
         try:
             urlgrabber.urlgrab(prebuilt_url + last, tar_path)
-            check_call(["tar", "xvfJ", tar_path])
+
+            check_call(["tar", "--transform",
+                        "'s,^%s,%s,'" % (self._path[1:], self._config["name"]),
+                        "-xvf", tar_path])
         except Exception, e:
             os.unlink(tar_path)
             raise e
@@ -264,10 +267,7 @@ class Root:
 
         name = self._config["name"]
 
-        transform = "--transform='s,^%s,%s,'" % (self.path[1:], name)
-
-        check_call("tar cvfJ %s-broot.tar.xz %s %s" %
-                   (name, transform, self.path), shell=True)
+        check_call(["tar", "cvfJ", "%s-broot.tar.xz" % name])
 
         return True
 
