@@ -284,7 +284,7 @@ class Root:
         return True
 
     def run(self, command, as_root=False):
-        if not self.check_exists(True):
+        if not self._check_exists(True):
             return False
 
         orig_home = os.environ.get("HOME", None)
