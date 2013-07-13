@@ -162,11 +162,13 @@ class Root:
         if exists:
             if not os.path.exists(self.path):
                 print("You must created or download the build root first.")
-                return True
+                return False
         else:
             if os.path.exists(self.path):
                 print("The build root already exists.")
                 return False
+
+        return True
 
     def create(self, mirror=None):
         if not self._check_exists(False):
