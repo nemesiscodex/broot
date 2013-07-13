@@ -264,7 +264,7 @@ class Root:
 
         name = self._config["name"]
 
-        transform = "--transform='s,^%s,%s,'" % (self.path, name)
+        transform = "--transform='s,^%s,%s,'" % (self.path[1:], name)
 
         check_call("tar cvfJ %s-broot.tar %s %s" %
                    (name, transform, self.path), shell=True)
