@@ -266,8 +266,8 @@ class Root:
 
         transform = "--transform='s,^%s,%s,'" % (self.path, name)
 
-        check_call(["tar", "cvfJ", "%s-broot.tar" % name, transform,
-                    self.path])
+        check_call("tar cvfJ %s-broot.tar %s %s" %
+                   (name, transform, self.path), shell=True)
 
         return True
 
