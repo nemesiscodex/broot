@@ -263,7 +263,7 @@ class Root:
 
             check_call(["tar", "--transform",
                         "'s,^%s,%s,x'" % (from_path, to_path),
-                        "-xvf", tar_path])
+                        "-xvf", tar_path], shell=True)
         except Exception, e:
             os.unlink(tar_path)
             raise e
