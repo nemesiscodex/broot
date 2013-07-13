@@ -51,7 +51,7 @@ def main():
         result = root.create(options.mirror)
     elif options.command == "run":
         args = " ".join(other_args)
-        result = root.run(root, args, options.mirror, as_root=options.root)
+        result = root.run(args, as_root=options.root)
     elif options.command == "shell":
         result = root.run("/bin/bash", as_root=options.root)
     elif options.command == "update":
