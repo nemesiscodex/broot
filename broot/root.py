@@ -21,7 +21,6 @@ import os
 import signal
 import shutil
 import tarfile
-import time
 import urlgrabber
 import urllib2
 from subprocess import check_call, check_output
@@ -274,7 +273,7 @@ class Root:
 
         name = self._config["name"]
 
-        filename = "%s-%s.tar" % (name, int(time.time()))
+        filename = "%s.tar" % name
         tar = tarfile.open(filename, mode="w")
         tar.add(self.path, name)
         tar.close()
