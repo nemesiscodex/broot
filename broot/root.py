@@ -273,7 +273,7 @@ class Root:
 
         name = self._config["name"]
 
-        filename = "%s-root.tar" % name
+        filename = "%s-broot.tar" % name
         tar = tarfile.open(filename, mode="w")
         tar.add(self.path, name)
         tar.close()
