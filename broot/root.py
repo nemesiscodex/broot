@@ -247,8 +247,10 @@ class Root:
         try:
             urlgrabber.urlgrab(prebuilt_url + last, tar_path)
 
+            path = self.path[1:self.path.rindex("-")] + ".{5}"
+
             check_call(["tar", "--transform",
-                        "'s,^%s,%s,'" % (self._path[1:], self._config["name"]),
+                        "'s,^%s,%s,x'" % (path, self._config["name"]),
                         "-xvf", tar_path])
         except Exception, e:
             os.unlink(tar_path)
