@@ -241,7 +241,7 @@ class Root:
 
         prebuilt_url = self._config["prebuilt"]
 
-        latest = urllib2.urlopen(prebuilt_url + "latest").read()
+        latest = urllib2.urlopen(prebuilt_url + "last").read()
 
         tar_path = os.path.join(self._var_dir, "temp.tar.xz")
 
