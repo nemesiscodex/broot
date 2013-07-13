@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import subprocess
-from distutils.core import setup
+from setuptools import setup
 from distutils.cmd import Command
 
 
@@ -46,4 +46,5 @@ setup(name="broot",
       url="http://github.com/dnarvaez/broot",
       classifiers=classifiers,
       cmdclass={"lint": LintCommand},
+      install_requires=["urlgrabber==3.9.1"],
       scripts=["scripts/broot"])

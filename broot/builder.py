@@ -104,7 +104,7 @@ class FedoraBuilder:
                        as_root=True)
 
     def clean_packages(self):
-        self._root.run("yum clean", as_root=True)
+        self._root.run("yum clean all", as_root=True)
 
 
 class DebianBuilder:

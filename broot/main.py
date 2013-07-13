@@ -20,21 +20,6 @@ import sys
 from broot.root import Root
 
 
-def exists(root):
-    if os.path.exists(root.path):
-        sys.exit(0)
-    else:
-        sys.exit(1)
-
-
-def run(root, command, mirror=None, as_root=False):
-    root.activate()
-    try:
-        root.run(command, as_root=as_root)
-    finally:
-        root.deactivate()
-
-
 def main():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
@@ -63,16 +48,22 @@ def main():
 
     options, other_args = parser.parse_known_args()
     if options.command == "create":
-        root.create(options.mirror)
+        result = root.create(options.mirror)
     elif options.command == "run":
-        run(root, " ".join(other_args), options.mirror, as_root=options.root)
+        args = " ".join(other_args)
+        result = root.run(root, args, options.mirror, as_root=options.root)
     elif options.command == "shell":
-        run("/bin/bash", as_root=options.root)
+        result = root.run("/bin/bash", as_root=options.root)
     elif options.command == "update":
-        root.update()
+        result = root.update()
     elif options.command == "exists":
-        exists(root)
+        result = os.path.exists(root.path)
     elif options.command == "clean":
-        root.clean()
+        result = root.clean()
+    elif options.command == "download":
+        result = root.download()
     elif options.command == "distribute":
-        root.distribute()
+        result = root.distribute()
+
+    if not result:
+        sys.exit(1)

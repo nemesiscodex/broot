@@ -22,6 +22,8 @@ import signal
 import shutil
 import tarfile
 import time
+import urlgrabber
+import urllib2
 from subprocess import check_call, check_output
 
 from broot.builder import FedoraBuilder
@@ -31,6 +33,7 @@ from broot.builder import DebianBuilder
 class Root:
     def __init__(self):
         self._config_path = os.path.abspath("root.json")
+        self._var_dir = os.path.join("/var", "lib", "broot")
 
         with open(self._config_path) as f:
             self._config = json.load(f)
@@ -56,7 +59,7 @@ class Root:
         path_hash.update(self._config_path)
         base64_hash = base64.urlsafe_b64encode(path_hash.digest())
 
-        return os.path.join("/var", "lib", "broot", "%s-%s" %
+        return os.path.join(self._var_dir, "%s-%s" %
                             (self._config["name"], base64_hash[0:5]))
 
     def _compute_mounts(self):
@@ -93,6 +96,9 @@ class Root:
         return mount_points
 
     def activate(self):
+        if not self._check_exists(True):
+            return False
+
         mounted = self._get_mounted()
 
         for source_path, dest_path in self._mounts.items():
@@ -152,7 +158,20 @@ class Root:
     def _get_stamp_path(self):
         return self.path + ".stamp"
 
+    def _check_exists(self, exists):
+        if exists:
+            if not os.path.exists(self.path):
+                print("You must created or download the build root first.")
+                return True
+        else:
+            if os.path.exists(self.path):
+                print("The build root already exists.")
+                return False
+
     def create(self, mirror=None):
+        if not self._check_exists(False):
+            return False
+
         try:
             os.makedirs(self.path)
         except OSError:
@@ -177,7 +196,12 @@ class Root:
             f.write(stamp)
             f.close()
 
+        return True
+
     def update(self):
+        if not self._check_exists(True):
+            return False
+
         try:
             with open(self._get_stamp_path()) as f:
                 stamp = f.read()
@@ -194,7 +218,12 @@ class Root:
             self.clean()
             self.create()
 
+        return True
+
     def clean(self):
+        if not self._check_exists(False):
+            return False
+
         self.deactivate()
         shutil.rmtree(self.path, ignore_errors=True)
 
@@ -203,15 +232,59 @@ class Root:
         except OSError:
             pass
 
-    def distribute(self):
-        name = self._config["name"]
-        timestamp = int(time.time())
+        return True
 
-        tar = tarfile.open("%s-%s.tar" % (name, timestamp), mode="w")
+    def download(self):
+        if not self._check_exists(False):
+            return False
+
+        prebuilt_url = self._config["prebuilt"]
+
+        latest = urllib2.urlopen(prebuilt_url + "latest").read()
+
+        tar_path = os.path.join(self._var_dir, "temp.tar.xz")
+
+        try:
+            urlgrabber.urlgrab(prebuilt_url + latest, tar_path)
+            check_call(["xz", tar_path])
+        except Exception, e:
+            os.unlink(tar_path)
+            raise e
+
+        tar_path = os.path.join(self._var_dir, "temp.tar")
+
+        try:
+            tar = tarfile.open(tar_path)
+            tar.extractall()
+            tar.close()
+        except Exception, e:
+            os.unlink(tar_path)
+            raise e
+
+        extracted_dir = os.path.join(self._var_dir, self._config["name"])
+        shutil.move(extracted_dir, self.path)
+
+        return True
+
+    def distribute(self):
+        if not self._check_exists(True):
+            return False
+
+        name = self._config["name"]
+
+        filename = "%s-%s.tar" % (name, int(time.time()))
+        tar = tarfile.open(filename, mode="w")
         tar.add(self.path, name)
         tar.close()
 
+        check_call(["xz", filename])
+
+        return True
+
     def run(self, command, as_root=False):
+        if not self.check_exists(True):
+            return False
+
         orig_home = os.environ.get("HOME", None)
 
         if as_root:
@@ -221,13 +294,19 @@ class Root:
             os.environ["HOME"] = "/home/%s" % self._user_name
             chroot_command = "chroot --userspec %s:%s" % (self._uid, self._gid)
 
-        check_call("%s %s /bin/bash -lc \"%s\"" %
-                   (chroot_command, self.path, command), shell=True)
+        self.activate()
+        try:
+            check_call("%s %s /bin/bash -lc \"%s\"" %
+                       (chroot_command, self.path, command), shell=True)
+        except:
+            self.deactivate()
 
         if orig_home:
             os.environ["HOME"] = orig_home
         elif "HOME" in os.environ:
             del os.environ["HOME"]
+
+        return True
 
     def _create_user(self):
         self.run("/usr/sbin/groupadd %s --gid %s" %
