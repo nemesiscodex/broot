@@ -262,7 +262,11 @@ class Root:
         if not self._check_exists(True):
             return False
 
-        check_call(["tar", "cvjJ", "%s-broot.tar" % self._config["name"],
+        name = self._config["name"]
+
+        transform = "--transform='s,^%s,%s,'" % (self.path, name)
+
+        check_call(["tar", "cvfJ", "%s-broot.tar" % name, transform,
                     self.path])
 
         return True
