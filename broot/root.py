@@ -32,13 +32,13 @@ class Root:
     def __init__(self):
         self._config_path = os.path.abspath("root.json")
         self._var_dir = os.path.join("/var", "lib", "broot")
+        self._hash_len = 5
 
         with open(self._config_path) as f:
             self._config = json.load(f)
 
         self.path = self._compute_path()
 
-        self._hash_len = 5
         self._mounts = self._compute_mounts()
         self._user_name = "broot"
         self._uid = os.environ["SUDO_UID"]
