@@ -22,7 +22,7 @@ import signal
 import shutil
 import urlgrabber
 import urllib2
-from urlgrabber.progress import TextProgress
+from urlgrabber.progress import TextMeter
 from subprocess import check_call, check_output
 
 from broot.builder import FedoraBuilder
@@ -256,7 +256,7 @@ class Root:
 
         try:
             urlgrabber.urlgrab(prebuilt_url + last, tar_path,
-                               progress_obj=TextProgress())
+                               progress_obj=TextMeter())
 
             from_path = "%s.{%d}" % (self.path[1:self.path.rindex("-")],
                                      self._hash_len)
