@@ -223,7 +223,7 @@ class Root:
         return True
 
     def clean(self):
-        if not self._check_exists(False):
+        if not self._check_exists(True):
             return False
 
         self.deactivate()

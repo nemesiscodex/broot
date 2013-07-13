@@ -59,7 +59,8 @@ def main():
     elif options.command == "exists":
         result = os.path.exists(root.path)
     elif options.command == "clean":
-        result = root.clean()
+        root.clean()
+        result = True
     elif options.command == "download":
         result = root.download()
     elif options.command == "distribute":
