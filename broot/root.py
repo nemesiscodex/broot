@@ -247,7 +247,7 @@ class Root:
 
         try:
             urlgrabber.urlgrab(prebuilt_url + latest, tar_path)
-            check_call(["xz", tar_path])
+            check_call(["xz", "-v", tar_path])
         except Exception, e:
             os.unlink(tar_path)
             raise e
@@ -278,7 +278,7 @@ class Root:
         tar.add(self.path, name)
         tar.close()
 
-        check_call(["xz", filename])
+        check_call(["xz", "-v", filename])
 
         return True
 
