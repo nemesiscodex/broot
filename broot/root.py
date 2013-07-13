@@ -107,8 +107,8 @@ class Root:
                 if not os.path.exists(dest_path):
                     if os.stat(source_path).st_uid == self._uid:
                         continue
-
-                os.makedirs(dest_path)
+                    else:
+                        os.makedirs(dest_path)
 
                 check_call(["mount", "--bind", source_path, dest_path])
 
