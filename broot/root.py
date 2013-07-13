@@ -241,13 +241,13 @@ class Root:
 
         prebuilt_url = self._config["prebuilt"]
 
-        latest = urllib2.urlopen(prebuilt_url + "last").read()
+        last = urllib2.urlopen(prebuilt_url + "last").read().strip()
 
         tar_path = os.path.join(self._var_dir, "temp.tar.xz")
 
         try:
-            urlgrabber.urlgrab(prebuilt_url + latest, tar_path)
-            check_call(["xz", "-v", tar_path])
+            urlgrabber.urlgrab(prebuilt_url + last, tar_path)
+            check_call(["unxz", "-v", tar_path])
         except Exception, e:
             os.unlink(tar_path)
             raise e
@@ -256,7 +256,7 @@ class Root:
 
         try:
             tar = tarfile.open(tar_path)
-            tar.extractall()
+            tar.extractall(self._var_dir)
             tar.close()
         except Exception, e:
             os.unlink(tar_path)
@@ -264,6 +264,8 @@ class Root:
 
         extracted_dir = os.path.join(self._var_dir, self._config["name"])
         shutil.move(extracted_dir, self.path)
+
+        os.unlink(tar_path)
 
         return True
 
