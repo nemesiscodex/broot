@@ -194,10 +194,7 @@ class Root:
         finally:
             self.deactivate()
 
-        with open(self._get_stamp_path(), "w") as f:
-            stamp = self._config.get("stamp", "")
-            f.write(stamp)
-            f.close()
+        self._write_stamp()
 
         return True
 
@@ -291,6 +288,8 @@ class Root:
             except OSError:
                 pass
 
+        self._write_stamp()
+
         return True
 
     def distribute(self):
@@ -329,6 +328,12 @@ class Root:
             del os.environ["HOME"]
 
         return True
+
+    def _write_stamp(self):
+        with open(self._get_stamp_path(), "w") as f:
+            stamp = self._config.get("stamp", "")
+            f.write(stamp)
+            f.close()
 
     def _create_user(self):
         self.run("/usr/sbin/groupadd %s --gid %d" %
