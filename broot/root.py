@@ -266,7 +266,11 @@ class Root:
                        "--transform 's,^%s,%s,x' -xvf %s" %
                        (from_path, to_path, tar_path), shell=True)
         except Exception, e:
-            os.unlink(tar_path)
+            try:
+                os.unlink(tar_path)
+            except OSError:
+                pass
+
             raise e
 
         os.unlink(tar_path)
