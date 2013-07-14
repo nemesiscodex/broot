@@ -46,5 +46,4 @@ setup(name="broot",
       url="http://github.com/dnarvaez/broot",
       classifiers=classifiers,
       cmdclass={"lint": LintCommand},
-      install_requires=["urlgrabber==3.9.1"],
       scripts=["scripts/broot"])

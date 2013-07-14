@@ -17,12 +17,12 @@ import base64
 import hashlib
 import collections
 import json
+import math
 import os
 import signal
 import shutil
-import urlgrabber
 import urllib2
-from urlgrabber.progress import TextMeter
+import sys
 from subprocess import check_call, check_output
 
 from broot.builder import FedoraBuilder
@@ -252,11 +252,31 @@ class Root:
 
         os.chdir(self._var_dir)
 
-        tar_path = os.path.join(self._var_dir, "tmp.tar.xz")
+        tar_path = os.path.join(self._var_dir, "broot.tar.xz")
 
         try:
-            urlgrabber.urlgrab(prebuilt_url + last, tar_path,
-                               progress_obj=TextMeter())
+
+            input_f = urllib2.urlopen(prebuilt_url + last)
+            total = int(input_f.info().getheader("Content-Length").strip())
+
+            with open(tar_path, "w") as output_f:
+                downloaded = 0
+                progress = 0
+
+                while True:
+                    chunk = input_f.read(8192)
+                    if not chunk:
+                        break
+
+                    output_f.write(chunk)
+
+                    downloaded += len(chunk)
+
+                    new_progress = math.floor(downloaded * 100.0 / total)
+                    if new_progress != progress:
+                        progress = new_progress
+                        sys.stdout.write("Downloaded %d%%\r" % progress)
+                        sys.stdout.flush()
 
             from_path = "%s-.{%d}" % (self.path[1:self.path.rindex("-")],
                                       self._hash_len)
@@ -265,15 +285,11 @@ class Root:
             check_call("tar --xz --numeric-owner -p "
                        "--transform 's,^%s,%s,x' -xvf %s" %
                        (from_path, to_path, tar_path), shell=True)
-        except Exception, e:
+        finally:
             try:
                 os.unlink(tar_path)
             except OSError:
                 pass
-
-            raise e
-
-        os.unlink(tar_path)
 
         return True
 
