@@ -103,12 +103,16 @@ class Root:
         mounted = self._get_mounted()
 
         for source_path, dest_path in self._mounts.items():
+            try:
+                os.makedirs(dest_path)
+            except OSError:
+                pass
+
             if dest_path not in mounted:
-                if os.stat(source_path).st_uid != self._uid:
-                    try:
-                        os.makedirs(dest_path)
-                    except OSError:
-                        pass
+                try:
+                    os.makedirs(dest_path)
+                except OSError:
+                    pass
 
                 check_call(["mount", "--bind", source_path, dest_path])
 
