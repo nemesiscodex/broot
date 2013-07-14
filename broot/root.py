@@ -104,11 +104,11 @@ class Root:
 
         for source_path, dest_path in self._mounts.items():
             if dest_path not in mounted:
-                if not os.path.exists(dest_path):
-                    if os.stat(source_path).st_uid == self._uid:
-                        continue
-
-                os.makedirs(dest_path)
+                if os.stat(source_path).st_uid != self._uid:
+                    try:
+                        os.makedirs(dest_path)
+                    except OSError:
+                        pass
 
                 check_call(["mount", "--bind", source_path, dest_path])
 
