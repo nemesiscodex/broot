@@ -368,7 +368,7 @@ class Root:
         self._setup_bashrc("root")
 
         try:
-            os.makedirs("/var/run/dbus")
+            os.makedirs(os.path.join(self.path, "var/run/dbus"))
         except OSError:
             pass
 
