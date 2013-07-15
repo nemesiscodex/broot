@@ -388,8 +388,9 @@ class Root:
 
         try:
             for path in self._get_user_mounts().values():
-                os.makedirs(path)
-                to_chown.append(path)
+                full_path = os.path.join(self.path, path)
+                os.makedirs(full_path)
+                to_chown.append(full_path)
         except OSError:
             pass
 
