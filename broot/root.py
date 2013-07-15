@@ -107,17 +107,7 @@ class Root:
         mounted = self._get_mounted()
 
         for source_path, dest_path in self._mounts.items():
-            try:
-                os.makedirs(dest_path)
-            except OSError:
-                pass
-
             if dest_path not in mounted:
-                try:
-                    os.makedirs(dest_path)
-                except OSError:
-                    pass
-
                 check_call(["mount", "--bind", source_path, dest_path])
 
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
@@ -187,10 +177,8 @@ class Root:
 
         self._builder.create(mirror)
 
-        self._setup_root_bashrc()
-
-        self._create_user()
-        self._setup_user_bashrc()
+        self._setup_system()
+        self._setup_user()
 
         self.activate()
         try:
@@ -370,7 +358,13 @@ class Root:
                     f.write(extra)
 
     def _setup_root_bashrc(self):
+        self._create_user()
         self._setup_bashrc("root")
+
+        try:
+            os.makedirs(dest_path)
+        except OSError:
+            pass
 
     def _setup_user_bashrc(self):
         shell_path = self._config.get("shell_path", None)
