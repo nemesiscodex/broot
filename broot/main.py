@@ -58,9 +58,8 @@ def main():
     elif options.command == "update":
         result = root.update()
     elif options.command == "state":
-        result = root.state != Root.STATE_NONE
-        if result:
-            print(root.state)
+        print(root.state)
+        result = True
     elif options.command == "clean":
         root.clean()
         result = True

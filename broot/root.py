@@ -30,7 +30,7 @@ from broot.builder import DebianBuilder
 
 
 class Root:
-    STATE_NONE = None
+    STATE_NONE = "none"
     STATE_READY = "ready"
     STATE_INVALID = "invalid"
 
