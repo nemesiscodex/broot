@@ -310,7 +310,7 @@ class Root:
         try:
             check_call("%s %s /bin/bash -lc \"%s\"" %
                        (chroot_command, self.path, command), shell=True)
-        except:
+        finally:
             self.deactivate()
 
         if orig_home:
