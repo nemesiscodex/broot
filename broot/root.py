@@ -30,6 +30,10 @@ from broot.builder import DebianBuilder
 
 
 class Root:
+    STATE_NONE = None
+    STATE_READY = "ready"
+    STATE_INVALID = "invalid"
+
     def __init__(self):
         self._config_path = os.path.abspath("root.json")
         self._var_dir = os.path.join("/var", "lib", "broot")
@@ -322,11 +326,15 @@ class Root:
 
         return True
 
-    def exists(self):
+    @property
+    def state(self):
         if not self._check_exists(True):
-            return False
+            return self.STATE_NONE
 
-        return self._check_stamp()
+        if self._check_stamp():
+            return self.STATE_READY
+        else:
+            return self.STATE_INVALID
 
     def _check_stamp(self):
         try:

@@ -57,8 +57,10 @@ def main():
         result = root.run("/bin/bash", as_root=options.root)
     elif options.command == "update":
         result = root.update()
-    elif options.command == "exists":
-        result = root.exists()
+    elif options.command == "state":
+        result = root.state != Root.STATE_NONE
+        if result:
+            print(root.state)
     elif options.command == "clean":
         root.clean()
         result = True
