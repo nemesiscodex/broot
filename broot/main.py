@@ -39,7 +39,7 @@ def main():
     run_parser.add_argument("--mirror")
     run_parser.add_argument("--root", action="store_true")
 
-    subparsers.add_parser("exists")
+    subparsers.add_parser("state")
     subparsers.add_parser("download")
     subparsers.add_parser("update")
     subparsers.add_parser("distribute")
