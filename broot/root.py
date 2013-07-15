@@ -213,7 +213,7 @@ class Root:
 
         self.activate()
         try:
-            self.update_packages()
+            self.install_packages()
         finally:
             self.deactivate()
 
