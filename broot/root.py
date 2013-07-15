@@ -387,7 +387,7 @@ class Root:
         to_chown.append(path)
 
         try:
-            for path in self._get_user_mounts().items():
+            for path in self._get_user_mounts().values():
                 os.makedirs(path)
                 to_chown.append(path)
         except OSError:
