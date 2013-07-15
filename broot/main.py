@@ -58,7 +58,7 @@ def main():
     elif options.command == "update":
         result = root.update()
     elif options.command == "exists":
-        result = os.path.exists(root.path)
+        result = root.exists()
     elif options.command == "clean":
         root.clean()
         result = True

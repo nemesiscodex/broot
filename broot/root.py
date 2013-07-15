@@ -142,7 +142,7 @@ class Root:
             if mount_path in mounted:
                 check_call(["umount", mount_path])
 
-    def update_packages(self):
+    def install_packages(self):
         self._builder.update_packages()
 
         flat_packages = []
@@ -153,8 +153,7 @@ class Root:
 
         self._builder.install_packages(flat_packages)
 
-        if "sudo" in flat_packages:
-            self._setup_sudo()
+        return flat_packages
 
     def _get_stamp_path(self):
         return self.path + ".stamp"
@@ -189,12 +188,16 @@ class Root:
 
         self.activate()
         try:
-            self.update_packages()
+            packages = self.install_packages()
+
+            if "sudo" in packages:
+                self._setup_sudo()
+
             self._builder.clean_packages()
         finally:
             self.deactivate()
 
-        self._write_stamp()
+        self._touch_stamp()
 
         return True
 
@@ -202,21 +205,11 @@ class Root:
         if not self._check_exists(True):
             return False
 
+        self.activate()
         try:
-            with open(self._get_stamp_path()) as f:
-                stamp = f.read()
-        except IOError:
-            stamp = ""
-
-        if stamp == self._config.get("stamp", ""):
-            self.activate()
-            try:
-                self.update_packages()
-            finally:
-                self.deactivate()
-        else:
-            self.clean()
-            self.create()
+            self.update_packages()
+        finally:
+            self.deactivate()
 
         return True
 
@@ -288,7 +281,7 @@ class Root:
             except OSError:
                 pass
 
-        self._write_stamp()
+        self._touch_stamp()
 
         return True
 
@@ -329,7 +322,22 @@ class Root:
 
         return True
 
-    def _write_stamp(self):
+    def exists(self):
+        if not self._check_exists(True):
+            return False
+
+        return self._check_stamp()
+
+    def _check_stamp(self):
+        try:
+            with open(self._get_stamp_path()) as f:
+                stamp = f.read()
+        except IOError:
+            stamp = ""
+
+        return stamp == self._config.get("stamp", "")
+
+    def _touch_stamp(self):
         with open(self._get_stamp_path(), "w") as f:
             stamp = self._config.get("stamp", "")
             f.write(stamp)
