@@ -67,11 +67,13 @@ class Root:
                             (self._config["name"],
                             base64_hash[0:self._hash_len]))
 
+    def _get_user_mounts(self):
+        return self._config.get("user_mounts", {})
+
     def _compute_mounts(self):
         mounts = collections.OrderedDict()
 
-        user_mounts = self._config.get("user_mounts", {})
-        for source_path, dest_path in user_mounts.items():
+        for source_path, dest_path in self._get_user_mounts().items():
             full_dest_path = os.path.join(self.path, dest_path)
             mounts[os.path.abspath(source_path)] = full_dest_path
 
@@ -385,7 +387,7 @@ class Root:
         to_chown.append(path)
 
         try:
-            for path in self._config.get(["user_mounts"], {}):
+            for path in self._get_user_mounts().items():
                 os.makedirs(path)
                 to_chown.append(path)
         except OSError:
