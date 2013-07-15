@@ -70,7 +70,8 @@ class Root:
     def _compute_mounts(self):
         mounts = collections.OrderedDict()
 
-        for source_path, dest_path in self._config.get("mounts", {}).items():
+        user_mounts = self._config.get("user_mounts", {})
+        for source_path, dest_path in user_mounts.items():
             full_dest_path = os.path.join(self.path, dest_path)
             mounts[os.path.abspath(source_path)] = full_dest_path
 
@@ -351,29 +352,45 @@ class Root:
     def _setup_bashrc(self, home_path, extra=None):
         environ = {"LANG": "C"}
 
-        with open(os.path.join(self.path, home_path, ".bashrc"), "w") as f:
+        path = os.path.join(self.path, home_path, ".bashrc")
+        with open(path, "w") as f:
             for variable, value in environ.items():
                 f.write("export %s=%s\n" % (variable, value))
                 if extra:
                     f.write(extra)
+
+        return path
 
     def _setup_system(self):
         self._create_user()
         self._setup_bashrc("root")
 
         try:
-            os.makedirs(dest_path)
+            os.makedirs("/var/run/dbus")
         except OSError:
             pass
 
-    def _setup_user_bashrc(self):
+    def _setup_user(self):
+        to_chown = []
+
         shell_path = self._config.get("shell_path", None)
         if shell_path:
             extra = "cd %s" % shell_path
         else:
             extra = None
 
-        self._setup_bashrc(os.path.join("home", self._user_name), extra)
+        path = self._setup_bashrc(os.path.join("home", self._user_name), extra)
+        to_chown.append_path()
+
+        try:
+            for path in self.config.get(["user_mounts"], {}):
+                os.makedirs(path)
+                to_chown.append_path()
+        except OSError:
+            pass
+
+        for path in to_chown:
+            os.chown(path, self._uid, self._guid)
 
     def _setup_sudo(self):
         sudoers_path = os.path.join(self.path, "etc", "sudoers")
