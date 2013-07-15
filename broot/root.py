@@ -109,7 +109,8 @@ class Root:
 
         for source_path, dest_path in self._mounts.items():
             if dest_path not in mounted:
-                check_call(["mount", "--bind", source_path, dest_path])
+                if os.path.exists(dest_path):
+                    check_call(["mount", "--bind", source_path, dest_path])
 
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
                         os.path.join(self.path, "etc", "resolv.conf"))
@@ -362,13 +363,14 @@ class Root:
         return path
 
     def _setup_system(self):
-        self._create_user()
         self._setup_bashrc("root")
 
         try:
             os.makedirs("/var/run/dbus")
         except OSError:
             pass
+
+        self._create_user()
 
     def _setup_user(self):
         to_chown = []
