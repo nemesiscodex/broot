@@ -89,6 +89,9 @@ class FedoraBuilder:
 
             check_call(["yum", "-y", "--installroot", root_path, "install",
                         "yum"])
+
+            # When host and root yum are different, yum clean might not work
+            shutil.rmtree(os.path.join(root_path, "var", "cache", "yum"))
         except (Exception, KeyboardInterrupt):
             shutil.rmtree(root_path)
             shutil.rmtree(temp_dir)
