@@ -382,12 +382,12 @@ class Root:
             extra = None
 
         path = self._setup_bashrc(os.path.join("home", self._user_name), extra)
-        to_chown.append()
+        to_chown.append(path)
 
         try:
             for path in self.config.get(["user_mounts"], {}):
                 os.makedirs(path)
-                to_chown.append()
+                to_chown.append(path)
         except OSError:
             pass
 
