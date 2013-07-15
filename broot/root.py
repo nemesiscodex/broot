@@ -357,7 +357,7 @@ class Root:
                 if extra:
                     f.write(extra)
 
-    def _setup_root_bashrc(self):
+    def _setup_system(self):
         self._create_user()
         self._setup_bashrc("root")
 
