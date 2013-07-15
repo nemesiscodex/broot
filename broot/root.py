@@ -394,7 +394,7 @@ class Root:
             pass
 
         for path in to_chown:
-            os.chown(path, self._uid, self._guid)
+            os.chown(path, self._uid, self._gid)
 
     def _setup_sudo(self):
         sudoers_path = os.path.join(self.path, "etc", "sudoers")
