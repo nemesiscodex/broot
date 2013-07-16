@@ -92,7 +92,7 @@ class Root:
         else:
             shm_source_path = "/dev/shm"
 
-        mounts[shm_source_path] = os.path.join(self.path, "/dev/shm")
+        mounts[shm_source_path] = os.path.join(self.path, "dev/shm")
 
         return mounts
 
