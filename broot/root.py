@@ -37,6 +37,7 @@ class Root:
     def __init__(self):
         self._config_path = os.path.abspath("root.json")
         self._var_dir = os.path.join("/var", "lib", "broot")
+        self._use_run_shm = os.path.exists("/run/shm")
         self._hash_len = 5
 
         with open(self._config_path) as f:
@@ -48,7 +49,6 @@ class Root:
         self._user_name = "broot"
         self._uid = int(os.environ["SUDO_UID"])
         self._gid = int(os.environ["SUDO_GID"])
-        self._use_run_shm = os.path.exists("/run/shm")
 
         distro = self._config.get("distro", "debian")
 
