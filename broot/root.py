@@ -78,22 +78,21 @@ class Root:
             full_dest_path = os.path.join(self.path, dest_path)
             mounts[os.path.abspath(source_path)] = full_dest_path
 
-        system_source_paths = ["/dev",
-                               "/dev/pts",
-                               "/sys",
-                               "/proc",
-                               "/tmp",
-                               "/var/run/dbus"]
-
-        for source_path in system_source_paths:
-            mounts[source_path] = os.path.join(self.path, source_path[1:])
-
         if self._use_run_shm:
             shm_source_path = "/run/shm"
         else:
             shm_source_path = "/dev/shm"
 
-        mounts[shm_source_path] = os.path.join(self.path, "/dev/shm")
+        system_source_paths = ["/dev",
+                               "/dev/pts",
+                               "/sys",
+                               "/proc",
+                               "/tmp",
+                               "/var/run/dbus",
+                               shm_source_path]
+
+        for source_path in system_source_paths:
+            mounts[source_path] = os.path.join(self.path, source_path[1:])
 
         return mounts
 
