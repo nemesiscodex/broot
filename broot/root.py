@@ -84,13 +84,15 @@ class Root:
                                "/tmp",
                                "/var/run/dbus"]
 
-        if os.path.exists("/run/shm"):
-            system_source_paths.append("/run/shm")
-        else:
-            system_source_paths.append("/dev/shm")
-
         for source_path in system_source_paths:
             mounts[source_path] = os.path.join(self.path, source_path[1:])
+
+        if os.path.exists("/run/shm"):
+            shm_source_path = "/run/shm"
+        else:
+            shm_source_path = "/dev/shm"
+
+        mounts[shm_source_path] = os.path.join(self.path, "/dev/shm")
 
         return mounts
 
