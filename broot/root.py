@@ -369,6 +369,7 @@ class Root:
 
         try:
             os.makedirs(os.path.join(self.path, "var/run/dbus"))
+            os.makedirs(os.path.join(self.path, "dev/shm"))
         except OSError:
             pass
 
