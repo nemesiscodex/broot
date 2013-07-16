@@ -48,6 +48,7 @@ class Root:
         self._user_name = "broot"
         self._uid = int(os.environ["SUDO_UID"])
         self._gid = int(os.environ["SUDO_GID"])
+        self._use_run_shm = os.path.exists("/run/shm")
 
         distro = self._config.get("distro", "debian")
 
@@ -87,7 +88,7 @@ class Root:
         for source_path in system_source_paths:
             mounts[source_path] = os.path.join(self.path, source_path[1:])
 
-        if os.path.exists("/run/shm"):
+        if self._use_run_shm:
             shm_source_path = "/run/shm"
         else:
             shm_source_path = "/dev/shm"
@@ -369,8 +370,14 @@ class Root:
     def _setup_system(self):
         self._setup_bashrc("root")
 
+        dirs_to_make = ["var/run/dbus"]
+
+        if self._use_run_shm:
+            dirs_to_make.append("run/shm")
+
         try:
-            os.makedirs(os.path.join(self.path, "var/run/dbus"))
+            for path in dirs_to_make:
+                os.makedirs(os.path.join(self.path, path))
         except OSError:
             pass
 
