@@ -117,6 +117,20 @@ class Root:
                 if os.path.exists(dest_path):
                     check_call(["mount", "--bind", source_path, dest_path])
 
+        self._setup_dns()
+        self._setup_xauth()
+
+    def _setup_xauth(self):
+        xauthority_path = os.environ.get("XAUTHORITY")
+        if xauthority_path is None:
+            xauthority_path = os.path.expanduser("~/.Xauthority")
+
+        path = os.path.join(self.path, "home", self._user_name, ".Xauthority")
+
+        shutil.copyfile(xauthority_path, path)
+        os.chown(path, self._uid, self._gid)
+
+    def _setup_dns(self):
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
                         os.path.join(self.path, "etc", "resolv.conf"))
 
