@@ -320,7 +320,8 @@ class Root:
 
         self.activate()
         try:
-            self.setup_xauth()
+            if not as_root:
+                self.setup_xauth()
 
             env = {"LANG": "C",
                    "PATH": "/bin:/usr/bin:/usr/sbin"}
