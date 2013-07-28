@@ -118,9 +118,8 @@ class Root:
                     check_call(["mount", "--bind", source_path, dest_path])
 
         self._setup_dns()
-        self._setup_xauth()
 
-    def _setup_xauth(self):
+    def setup_xauth(self):
         xauthority_path = os.environ.get("XAUTHORITY")
         if xauthority_path is None:
             xauthority_path = os.path.expanduser("~/.Xauthority")
@@ -321,6 +320,8 @@ class Root:
 
         self.activate()
         try:
+            self.setup_xauth()
+
             env = {"LANG": "C",
                    "PATH": "/bin:/usr/bin:/usr/sbin"}
 
