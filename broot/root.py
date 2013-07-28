@@ -300,26 +300,35 @@ class Root:
         if not self._check_exists(True):
             return False
 
-        orig_home = os.environ.get("HOME", None)
-
         if as_root:
             chroot_command = "chroot"
-            os.environ["HOME"] = "/root"
         else:
-            os.environ["HOME"] = "/home/%s" % self._user_name
             chroot_command = "chroot --userspec %d:%d" % (self._uid, self._gid)
 
         self.activate()
         try:
-            check_call("%s %s /bin/bash -lc \"%s\"" %
-                       (chroot_command, self.path, command), shell=True)
+            env = {"LANG": "C",
+                   "PATH": "/bin:/usr/bin:/usr/sbin"}
+
+            if as_root:
+                env["HOME"] = "/root"
+            else:
+                env["HOME"] = "/home/%s" % self._user_name
+                env["BROOT"] = "yes"
+
+                display = os.environ.get("DISPLAY")
+                if display is not None:
+                    env["DISPLAY"] = display
+
+            env_string = ""
+            for name, value in env.items():
+                env_string += "%s=%s " % (name, value)
+
+            check_call("%s %s /usr/bin/env -i %s /bin/bash -lc \"%s\"" %
+                       (chroot_command, self.path, env_string, command),
+                       shell=True)
         finally:
             self.deactivate()
-
-        if orig_home:
-            os.environ["HOME"] = orig_home
-        elif "HOME" in os.environ:
-            del os.environ["HOME"]
 
         return True
 
@@ -355,21 +364,7 @@ class Root:
         self.run("/usr/sbin/useradd %s --uid %d --gid %d" %
                  (self._user_name, self._gid, self._uid), as_root=True)
 
-    def _setup_bashrc(self, home_path, extra=None):
-        environ = {"LANG": "C"}
-
-        path = os.path.join(self.path, home_path, ".bashrc")
-        with open(path, "w") as f:
-            for variable, value in environ.items():
-                f.write("export %s=%s\n" % (variable, value))
-                if extra:
-                    f.write(extra)
-
-        return path
-
     def _setup_system(self):
-        self._setup_bashrc("root")
-
         dirs_to_make = ["var/run/dbus", "run/udev"]
 
         if self._use_run_shm:
@@ -388,12 +383,13 @@ class Root:
 
         shell_path = self._config.get("shell_path", None)
         if shell_path:
-            extra = "cd %s" % shell_path
-        else:
-            extra = None
+            bashrc_path = os.path.join(self.path, "home", self._user_name,
+                                       ".bashrc")
 
-        path = self._setup_bashrc(os.path.join("home", self._user_name), extra)
-        to_chown.append(path)
+            with open(bashrc_path, "w") as f:
+                f.write("cd %s" % shell_path)
+
+            to_chown.append(bashrc_path)
 
         try:
             for path in self._get_user_mounts().values():

@@ -24,8 +24,6 @@ def main():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
 
-    os.environ["BROOT"] = "yes"
-
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
 
