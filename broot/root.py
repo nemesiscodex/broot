@@ -120,14 +120,12 @@ class Root:
         self._setup_dns()
 
     def setup_xauth(self):
-        xauthority_path = os.environ.get("XAUTHORITY")
-        if xauthority_path is None:
-            xauthority_path = os.path.expanduser("~/.Xauthority")
+        source_path = os.environ["XAUTHORITY"]
+        dest_path = os.path.join(self.path, "home", self._user_name,
+                                 ".Xauthority")
 
-        path = os.path.join(self.path, "home", self._user_name, ".Xauthority")
-
-        shutil.copyfile(xauthority_path, path)
-        os.chown(path, self._uid, self._gid)
+        shutil.copyfile(source_path, dest_path)
+        os.chown(dest_path, self._uid, self._gid)
 
     def _setup_dns(self):
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
