@@ -124,8 +124,11 @@ class Root:
         dest_path = os.path.join(self.path, "home", self._user_name,
                                  ".Xauthority")
 
-        shutil.copyfile(source_path, dest_path)
-        os.chown(dest_path, self._uid, self._gid)
+        try:
+            shutil.copyfile(source_path, dest_path)
+            os.chown(dest_path, self._uid, self._gid)
+        except IOError:
+            pass
 
     def _setup_dns(self):
         shutil.copyfile(os.path.join("/etc", "resolv.conf"),
