@@ -23,7 +23,7 @@ import signal
 import shutil
 import urllib2
 import sys
-from subprocess import check_call, check_output
+from subprocess import check_call, call, check_output
 
 from broot.builder import FedoraBuilder
 from broot.builder import DebianBuilder
@@ -341,9 +341,11 @@ class Root:
             for name, value in env.items():
                 env_string += "%s=%s " % (name, value)
 
-            check_call("%s %s /usr/bin/env -i %s /bin/bash -lc \"%s\"" %
-                       (chroot_command, self.path, env_string, command),
-                       shell=True)
+            result = call("%s %s /usr/bin/env -i %s /bin/bash -lc \"%s\"" %
+                          (chroot_command, self.path, env_string, command),
+                          shell=True)
+
+            return result == 0
         finally:
             self.deactivate()
 
