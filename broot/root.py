@@ -216,9 +216,12 @@ class Root:
 
         return True
 
-    def update(self):
-        if not self._check_exists(True):
-            return False
+    def setup(self):
+        broot_exists = self._check_exists(True, message=False)
+        broot_valid = self._check_stamp()
+
+        if not broot_exists or not broot_valid:
+            self._download()
 
         self.activate()
         try:
@@ -242,10 +245,7 @@ class Root:
 
         return True
 
-    def download(self):
-        if not self._check_exists(False):
-            return False
-
+    def _download(self):
         prebuilt_url = self._config["prebuilt"]
 
         last = urllib2.urlopen(prebuilt_url + "last").read().strip()
@@ -298,8 +298,6 @@ class Root:
 
         self._touch_stamp()
 
-        return True
-
     def distribute(self):
         if not self._check_exists(True):
             return False
@@ -350,16 +348,6 @@ class Root:
             self.deactivate()
 
         return True
-
-    @property
-    def state(self):
-        if not self._check_exists(True, message=False):
-            return self.STATE_NONE
-
-        if self._check_stamp():
-            return self.STATE_READY
-        else:
-            return self.STATE_INVALID
 
     def _check_stamp(self):
         try:

@@ -37,9 +37,7 @@ def main():
     run_parser.add_argument("--mirror")
     run_parser.add_argument("--root", action="store_true")
 
-    subparsers.add_parser("state")
-    subparsers.add_parser("download")
-    subparsers.add_parser("update")
+    subparsers.add_parser("setup")
     subparsers.add_parser("distribute")
     subparsers.add_parser("clean")
 
@@ -53,16 +51,11 @@ def main():
         result = root.run(args, as_root=options.root)
     elif options.command == "shell":
         result = root.run("/bin/bash", as_root=options.root)
-    elif options.command == "update":
-        result = root.update()
-    elif options.command == "state":
-        print(root.state)
-        result = True
+    elif options.command == "setup":
+        result = root.setup()
     elif options.command == "clean":
         root.clean()
         result = True
-    elif options.command == "download":
-        result = root.download()
     elif options.command == "distribute":
         result = root.distribute()
 
