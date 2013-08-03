@@ -331,9 +331,10 @@ class Root:
                 env["HOME"] = "/home/%s" % self._user_name
                 env["BROOT"] = "yes"
 
-                display = os.environ.get("DISPLAY")
-                if display is not None:
-                    env["DISPLAY"] = display
+                to_keep = ["DISPLAY", "XAUTHORITY", "XAUTHLOCALHOSTNAME"]
+                for name in to_keep:
+                    if name in os.environ:
+                        env[name] = os.environ[name]
 
             env_string = ""
             for name, value in env.items():
