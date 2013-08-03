@@ -89,6 +89,7 @@ class Root:
                                "/proc",
                                "/tmp",
                                "/var/run/dbus",
+                               "/run/gdm",
                                "/run/udev",
                                shm_source_path]
 
@@ -373,7 +374,7 @@ class Root:
                  (self._user_name, self._gid, self._uid), as_root=True)
 
     def _setup_system(self):
-        dirs_to_make = ["var/run/dbus", "run/udev"]
+        dirs_to_make = ["var/run/dbus", "run/gdm", "run/udev"]
 
         if self._use_run_shm:
             dirs_to_make.append("run/shm")
