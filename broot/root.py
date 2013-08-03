@@ -94,7 +94,8 @@ class Root:
                                shm_source_path]
 
         for source_path in system_source_paths:
-            mounts[source_path] = os.path.join(self.path, source_path[1:])
+            if os.path.exists(source_path):
+                mounts[source_path] = os.path.join(self.path, source_path[1:])
 
         return mounts
 
