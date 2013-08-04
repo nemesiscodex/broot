@@ -120,12 +120,10 @@ class Root:
 
         self._setup_dns()
 
-    def _get_xauthority_path(self):
-        return os.path.join(self.path, "home", self._user_name, ".Xauthority")
-
     def setup_xauth(self):
         source_path = os.environ["XAUTHORITY"]
-        dest_path = self._get_xauthority_path()
+        dest_path = os.path.join(self.path, "home", self._user_name,
+                                 ".Xauthority")
 
         try:
             shutil.copyfile(source_path, dest_path)
@@ -340,8 +338,10 @@ class Root:
             if as_root:
                 env["HOME"] = "/root"
             else:
-                env["HOME"] = "/home/%s" % self._user_name
-                env["XAUTHORITY"] = self._get_xauthority_path()
+                home_dir = "/home/%s" % self._user_name
+
+                env["HOME"] = home_dir
+                env["XAUTHORITY"] = os.path.join(home_dir, ".Xauthority")
                 env["BROOT"] = "yes"
 
                 to_keep = ["DISPLAY", "XAUTHLOCALHOSTNAME"]
