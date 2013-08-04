@@ -189,7 +189,7 @@ class Root:
 
         return True
 
-    def create(self, mirror=None):
+    def create(self, arch=None, mirror=None):
         if not self._check_exists(False):
             return False
 
@@ -198,7 +198,7 @@ class Root:
         except OSError:
             pass
 
-        self._builder.create(mirror)
+        self._builder.create(arch, mirror)
 
         self._setup_system()
         self._setup_user()

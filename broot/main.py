@@ -31,6 +31,7 @@ def main():
     shell_parser.add_argument("--root", action="store_true")
 
     create_parser = subparsers.add_parser("create")
+    create_parser.add_argument("--arch")
     create_parser.add_argument("--mirror")
 
     run_parser = subparsers.add_parser("run")
@@ -45,7 +46,7 @@ def main():
 
     options, other_args = parser.parse_known_args()
     if options.command == "create":
-        result = root.create(options.mirror)
+        result = root.create(options.arch, options.mirror)
     elif options.command == "run":
         args = " ".join(other_args)
         result = root.run(args, as_root=options.root)

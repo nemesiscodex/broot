@@ -62,17 +62,19 @@ class FedoraBuilder:
             f.write("%_dbpath /var/lib/rpm")
             f.close()
 
-    def create(self, mirror=None):
+    def create(self, arch, mirror):
         self._setup_rpm()
 
         root_path = self._root.path
 
-        release_rpm_mirror = mirror
-        if release_rpm_mirror is None:
-            release_rpm_mirror = "ftp://mirrors.kernel.org/fedora"
+        if arch is None:
+            arch = "x86_64"
 
-        release_rpm = "%s/releases/19/Fedora/x86_64/os/Packages/f/" \
-                      "fedora-release-19-2.noarch.rpm" % release_rpm_mirror
+        if mirror is None:
+            mirror = "ftp://mirrors.kernel.org/fedora"
+
+        release_rpm = "%s/releases/19/Fedora/%s/os/Packages/f/" \
+                      "fedora-release-19-2.noarch.rpm" % (arch, mirror)
 
         temp_dir = tempfile.mkdtemp()
 
