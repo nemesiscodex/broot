@@ -74,7 +74,7 @@ class FedoraBuilder:
             mirror = "ftp://mirrors.kernel.org/fedora"
 
         release_rpm = "%s/releases/19/Fedora/%s/os/Packages/f/" \
-                      "fedora-release-19-2.noarch.rpm" % (arch, mirror)
+                      "fedora-release-19-2.noarch.rpm" % (mirror, arch)
 
         temp_dir = tempfile.mkdtemp()
 
