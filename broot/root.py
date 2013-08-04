@@ -248,12 +248,18 @@ class Root:
 
         return True
 
+    def get_arch(self):
+        arch = check_output("arch").strip()
+
+        if arch == "i686":
+            arch = "i386"
+
+        return arch
+
     def _download(self):
         prebuilt_url = self._config["prebuilt"]
 
-        arch = check_output("arch").strip()
-
-        last_url = "%slast-%s" % (prebuilt_url, arch)
+        last_url = "%slast-%s" % (prebuilt_url, self.get_arch())
         last = urllib2.urlopen(last_url).read().strip()
 
         try:

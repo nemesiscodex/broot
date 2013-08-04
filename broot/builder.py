@@ -67,14 +67,12 @@ class FedoraBuilder:
 
         root_path = self._root.path
 
-        if arch is None:
-            arch = "x86_64"
-
         if mirror is None:
             mirror = "ftp://mirrors.kernel.org/fedora"
 
         release_rpm = "%s/releases/19/Fedora/%s/os/Packages/f/" \
-                      "fedora-release-19-2.noarch.rpm" % (mirror, arch)
+                      "fedora-release-19-2.noarch.rpm" % \
+                      (mirror, self._root.get_arch())
 
         temp_dir = tempfile.mkdtemp()
 
