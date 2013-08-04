@@ -121,10 +121,12 @@ class Root:
 
         self._setup_dns()
 
+    def _get_xauthority_path(self):
+        return os.path.join(self.path, "home", self._user_name, ".Xauthority")
+
     def setup_xauth(self):
         source_path = os.environ["XAUTHORITY"]
-        dest_path = os.path.join(self.path, "home", self._user_name,
-                                 ".Xauthority")
+        dest_path = self._get_xauthority_path()
 
         try:
             shutil.copyfile(source_path, dest_path)
@@ -250,7 +252,7 @@ class Root:
     def _download(self):
         prebuilt_url = self._config["prebuilt"]
 
-        arch = subprocess.check_output("arch").strip()
+        arch = check_output("arch").strip()
 
         last_url = "%slast-%s" % (prebuilt_url, arch)
         last = urllib2.urlopen(last_url).read().strip()
@@ -334,9 +336,10 @@ class Root:
                 env["HOME"] = "/root"
             else:
                 env["HOME"] = "/home/%s" % self._user_name
+                env["XAUTHORITY"] = self._get_xauthority_path()
                 env["BROOT"] = "yes"
 
-                to_keep = ["DISPLAY", "XAUTHORITY", "XAUTHLOCALHOSTNAME"]
+                to_keep = ["DISPLAY", "XAUTHLOCALHOSTNAME"]
                 for name in to_keep:
                     if name in os.environ:
                         env[name] = os.environ[name]
