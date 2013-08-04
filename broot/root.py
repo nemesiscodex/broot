@@ -250,7 +250,10 @@ class Root:
     def _download(self):
         prebuilt_url = self._config["prebuilt"]
 
-        last = urllib2.urlopen(prebuilt_url + "last").read().strip()
+        arch = subprocess.check_output("arch").strip()
+
+        last_url = "%slast-%s" % (prebuilt_url, arch)
+        last = urllib2.urlopen(last_url).read().strip()
 
         try:
             os.makedirs(self._var_dir)
