@@ -344,7 +344,7 @@ class Root:
                 env["XAUTHORITY"] = os.path.join(home_dir, ".Xauthority")
                 env["BROOT"] = "yes"
 
-                to_keep = ["DISPLAY", "XAUTHLOCALHOSTNAME"]
+                to_keep = ["DISPLAY", "XAUTHLOCALHOSTNAME", "TERM"]
                 for name in to_keep:
                     if name in os.environ:
                         env[name] = os.environ[name]
