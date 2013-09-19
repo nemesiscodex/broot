@@ -247,7 +247,7 @@ class Root:
         return True
 
     def get_arch(self):
-        arch = check_output("arch").strip()
+        arch = check_output(["uname", "-m"]).strip()
 
         if arch == "i686":
             arch = "i386"
