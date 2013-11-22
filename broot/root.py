@@ -18,6 +18,7 @@ import hashlib
 import collections
 import json
 import math
+import re
 import os
 import signal
 import shutil
@@ -299,7 +300,8 @@ class Root:
 
             check_call("tar --xz --numeric-owner -p "
                        "--transform 's,^%s,%s,x' -xvf %s" %
-                       (from_path, to_path, tar_path), shell=True)
+                       (re.escape(from_path), re.escape(to_path),
+                        tar_path), shell=True)
         finally:
             try:
                 os.unlink(tar_path)
