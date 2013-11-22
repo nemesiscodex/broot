@@ -64,8 +64,8 @@ class Root:
         path_hash.update(self._config_path)
 
         base64_hash = base64.b64encode(path_hash.digest())
-        base64_hash.replace("+", "0")
-        base64_hash.replace("/", "0")
+        base64_hash = base64_hash.replace("+", "0")
+        base64_hash = base64_hash.replace("/", "0")
 
         return os.path.join(self._var_dir, "%s-%s" %
                             (self._config["name"],
