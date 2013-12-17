@@ -48,9 +48,12 @@ class FedoraBuilder:
                         if line.startswith("mirrorlist"):
                             line = line.replace("https", "http")
 
+                    name_to_key = {"fedora-20": "246110C1",
+                                   "fedora": "FB4B18E6"}
+
                     if line.startswith("gpgkey"):
                         line = "gpgkey=http://fedoraproject.org/" \
-                               "static/FB4B18E6.txt\n"
+                               "static/%s.txt\n" % name_to_key[self._name]
 
                     conf = conf + line
 
