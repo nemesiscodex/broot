@@ -50,7 +50,7 @@ class FedoraBuilder:
 
                     if line.startswith("gpgkey"):
                         line = "gpgkey=http://fedoraproject.org/" \
-                               "static/FB4B18E6.txt"
+                               "static/FB4B18E6.txt\n"
 
                     conf = conf + line
 
