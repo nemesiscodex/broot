@@ -54,8 +54,8 @@ class Root:
 
         if distro == "debian":
             self._builder = DebianBuilder(self)
-        elif distro == "fedora":
-            self._builder = FedoraBuilder(self)
+        elif distro in ["fedora", "fedora-20"]:
+            self._builder = FedoraBuilder(self, distro)
         else:
             raise ValueError("Unknown distro %s" % distro)
 
@@ -69,7 +69,7 @@ class Root:
 
         return os.path.join(self._var_dir, "%s-%s" %
                             (self._config["name"],
-                            base64_hash[0:self._hash_len]))
+                             base64_hash[0:self._hash_len]))
 
     def _get_user_mounts(self):
         return self._config.get("user_mounts", {})

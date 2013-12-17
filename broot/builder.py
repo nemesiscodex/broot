@@ -21,7 +21,8 @@ from subprocess import check_call
 
 
 class FedoraBuilder:
-    def __init__(self, root):
+    def __init__(self, root, name):
+        self._name = name
         self._root = root
 
     def _setup_yum(self, mirror):
@@ -70,9 +71,14 @@ class FedoraBuilder:
         if mirror is None:
             mirror = "ftp://mirrors.kernel.org/fedora"
 
-        release_rpm = "%s/releases/19/Fedora/%s/os/Packages/f/" \
-                      "fedora-release-19-2.noarch.rpm" % \
-                      (mirror, self._root.get_arch())
+        if self._name == "fedora-20":
+            release_rpm = "%s/releases/20/Fedora/%s/os/Packages/f/" \
+                          "fedora-release-20-1.noarch.rpm" % \
+                          (mirror, self._root.get_arch())
+        else:
+            release_rpm = "%s/releases/19/Fedora/%s/os/Packages/f/" \
+                          "fedora-release-19-2.noarch.rpm" % \
+                          (mirror, self._root.get_arch())
 
         temp_dir = tempfile.mkdtemp()
 
