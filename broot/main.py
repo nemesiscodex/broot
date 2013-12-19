@@ -52,8 +52,9 @@ def cmd_setup(options, other_args):
 
 
 def cmd_clean(options, other_args):
-    root = _get_pristine_root()
-    root.clean()
+    if not options.keep_pristine:
+        root = _get_pristine_root()
+        root.clean()
 
     root = _get_current_root()
     root.clean()
@@ -84,9 +85,11 @@ def main():
     run_parser.add_argument("--mirror")
     run_parser.add_argument("--root", action="store_true")
 
+    clean_parser = subparsers.add_parser("clean")
+    clean_parser.add_argument("--keep-pristine")
+
     subparsers.add_parser("setup")
     subparsers.add_parser("distribute")
-    subparsers.add_parser("clean")
 
     options, other_args = parser.parse_known_args()
 
