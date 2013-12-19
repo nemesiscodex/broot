@@ -71,9 +71,10 @@ class Root:
         base64_hash = base64_hash.replace("+", "0")
         base64_hash = base64_hash.replace("/", "0")
 
-        return os.path.join(self._var_dir, "%s-%s", subdir %
-                            (self._config["name"],
-                             base64_hash[0:self._hash_len]))
+        main_dir = "%s-%s" % (self._config["name"],
+                              base64_hash[0:self._hash_len])
+
+        return os.path.join(self._var_dir, main_dir, subdir)
 
     def _get_user_mounts(self):
         return self._config.get("user_mounts", {})
