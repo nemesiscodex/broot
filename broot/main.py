@@ -86,7 +86,7 @@ def main():
     run_parser.add_argument("--root", action="store_true")
 
     clean_parser = subparsers.add_parser("clean")
-    clean_parser.add_argument("--keep-pristine")
+    clean_parser.add_argument("--keep-pristine", action="store_true")
 
     subparsers.add_parser("setup")
     subparsers.add_parser("distribute")
