@@ -56,7 +56,7 @@ def cmd_clean(options, other_args):
         root = _get_pristine_root()
         root.clean()
 
-    root = _get_current_root()
+    root = _get_current_root(clone=False)
     root.clean()
 
     return True
