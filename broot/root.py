@@ -34,7 +34,8 @@ class Root:
     STATE_READY = "ready"
     STATE_INVALID = "invalid"
 
-    def __init__(self):
+    def __init__(self, name):
+        self._name = name
         self._config_path = os.path.abspath("root.json")
         self._var_dir = os.path.join("/var", "lib", "broot")
         self._use_run_shm = os.path.exists("/run/shm")
@@ -59,7 +60,10 @@ class Root:
         else:
             raise ValueError("Unknown distro %s" % distro)
 
-    def _compute_path(self):
+    def _compute_path(self, subdir=None):
+        if subdir is None:
+            subdir = self._name
+
         path_hash = hashlib.sha1()
         path_hash.update(self._config_path)
 
@@ -67,7 +71,7 @@ class Root:
         base64_hash = base64_hash.replace("+", "0")
         base64_hash = base64_hash.replace("/", "0")
 
-        return os.path.join(self._var_dir, "%s-%s" %
+        return os.path.join(self._var_dir, "%s-%s", subdir %
                             (self._config["name"],
                              base64_hash[0:self._hash_len]))
 
@@ -261,6 +265,15 @@ class Root:
             pass
 
         return True
+
+    def exists(self):
+        return os.path.exists(self.path)
+
+    def clone(self, name):
+        self.deactivate()
+
+        check_call(["rsync", "-a", "--delete", "-q", "-W", "-x",
+                    "%s/" % self.path, self._compute_path(name)])
 
     def get_arch(self):
         arch = check_output(["uname", "-m"]).strip()

@@ -20,35 +20,49 @@ import sys
 from broot.root import Root
 
 
+def _get_pristine_root():
+    return Root("pristine")
+
+
+def _get_current_root(clone=True):
+    root = Root("current")
+    if clone and not root.exists():
+        _get_pristine_root().clone("current")
+    return root
+
+
 def cmd_create(options, other_args):
-    root = Root()
+    root = _get_pristine_root()
     return root.create(options.arch, options.mirror)
 
 
 def cmd_run(options, other_args):
-    root = Root()
+    root = _get_current_root()
     return root.run(" ".join(other_args), as_root=options.root)
 
 
 def cmd_shell(options, other_args):
-    root = Root()
+    root = _get_current_root()
     return root.run("/bin/bash", as_root=options.root)
 
 
 def cmd_setup(options, other_args):
-    root = Root()
+    root = _get_pristine_root()
     return root.setup()
 
 
 def cmd_clean(options, other_args):
-    root = Root()
+    root = _get_pristine_root()
+    root.clean()
+
+    root = _get_current_root()
     root.clean()
 
     return True
 
 
 def cmd_distribute(options, other_args):
-    root = Root()
+    root = _get_pristine_root()
     return root.distribute()
 
 
