@@ -20,6 +20,38 @@ import sys
 from broot.root import Root
 
 
+def cmd_create(options, other_args):
+    root = Root()
+    return root.create(options.arch, options.mirror)
+
+
+def cmd_run(options, other_args):
+    root = Root()
+    return root.run(" ".join(other_args), as_root=options.root)
+
+
+def cmd_shell(options, other_args):
+    root = Root()
+    return root.run("/bin/bash", as_root=options.root)
+
+
+def cmd_setup(options, other_args):
+    root = Root()
+    return root.setup()
+
+
+def cmd_clean(options, other_args):
+    root = Root()
+    root.clean()
+
+    return True
+
+
+def cmd_distribute(options, other_args):
+    root = Root()
+    return root.distribute()
+
+
 def main():
     if not os.geteuid() == 0:
         sys.exit("You must run the command as root")
@@ -42,23 +74,8 @@ def main():
     subparsers.add_parser("distribute")
     subparsers.add_parser("clean")
 
-    root = Root()
-
     options, other_args = parser.parse_known_args()
-    if options.command == "create":
-        result = root.create(options.arch, options.mirror)
-    elif options.command == "run":
-        args = " ".join(other_args)
-        result = root.run(args, as_root=options.root)
-    elif options.command == "shell":
-        result = root.run("/bin/bash", as_root=options.root)
-    elif options.command == "setup":
-        result = root.setup()
-    elif options.command == "clean":
-        root.clean()
-        result = True
-    elif options.command == "distribute":
-        result = root.distribute()
 
-    if not result:
+    cmd_function = globals()["cmd_%s" % options.command]
+    if not cmd_function(options, other_args):
         sys.exit(1)
