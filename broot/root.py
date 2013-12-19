@@ -161,7 +161,12 @@ class Root:
             if mount_path in mounted:
                 check_call(["umount", mount_path])
 
-    def install_packages(self):
+    def _install_npm_packages(self):
+        npm_packages = self._config.get("npm_packages")
+        if npm_packages:
+            self.run("npm install %s" % " ".join(npm_packages), as_root=True)
+
+    def _install_os_packages(self):
         self._builder.update_packages()
 
         flat_packages = []
@@ -207,10 +212,13 @@ class Root:
 
         self.activate()
         try:
-            packages = self.install_packages()
+            packages = self._install_os_packages()
 
             if "sudo" in packages:
                 self._setup_sudo()
+
+            if "npm" in packages:
+                self._install_npm_packages()
 
             self._builder.clean_packages()
         finally:
@@ -229,7 +237,11 @@ class Root:
 
         self.activate()
         try:
-            self.install_packages()
+            packages = self._install_os_packages()
+
+            if "npm" in packages:
+                self._install_npm_packages()
+
         finally:
             self.deactivate()
 
