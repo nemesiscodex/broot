@@ -44,7 +44,7 @@ class Root:
         with open(self._config_path) as f:
             self._config = json.load(f)
 
-        self._base_path = self._compute_path()
+        self._base_path = self._compute_base_path()
 
         self.path = os.path.join(self._base_path, self._name)
 
