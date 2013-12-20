@@ -330,8 +330,6 @@ class Root:
                                       self._hash_len)
             to_path = os.path.basename(self.path)
 
-            logging.info("Transform %s to %s" % (from_path, to_path))
-
             check_call("tar --xz --numeric-owner -p "
                        "--transform 's,^%s,%s,x' -xvf %s" %
                        (from_path, to_path, tar_path), shell=True)
