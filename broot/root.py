@@ -44,7 +44,9 @@ class Root:
         with open(self._config_path) as f:
             self._config = json.load(f)
 
-        self.path = self._compute_path()
+        self._base_path = self._compute_path()
+
+        self.path = os.path.join(self._base_path, self._name)
 
         self._mounts = self._compute_mounts()
         self._user_name = "broot"
@@ -60,10 +62,7 @@ class Root:
         else:
             raise ValueError("Unknown distro %s" % distro)
 
-    def _compute_path(self, subdir=None):
-        if subdir is None:
-            subdir = self._name
-
+    def _compute_base_path(self):
         path_hash = hashlib.sha1()
         path_hash.update(self._config_path)
 
@@ -71,10 +70,10 @@ class Root:
         base64_hash = base64_hash.replace("+", "0")
         base64_hash = base64_hash.replace("/", "0")
 
-        main_dir = "%s-%s" % (self._config["name"],
+        base_dir = "%s-%s" % (self._config["name"],
                               base64_hash[0:self._hash_len])
 
-        return os.path.join(self._var_dir, main_dir, subdir)
+        return os.path.join(self._var_dir, base_dir)
 
     def _get_user_mounts(self):
         return self._config.get("user_mounts", {})
@@ -274,7 +273,7 @@ class Root:
         self.deactivate()
 
         check_call(["rsync", "-a", "--delete", "-q", "-W", "-x",
-                    "%s/" % self.path, self._compute_path(name)])
+                    "%s/" % self.path, os.path.join(self._base_path, name)])
 
     def get_arch(self):
         arch = check_output(["uname", "-m"]).strip()
@@ -326,9 +325,10 @@ class Root:
                         sys.stdout.write("Downloaded %d%%\r" % progress)
                         sys.stdout.flush()
 
-            from_path = "%s-.{%d}" % (self.path[1:self.path.rindex("-")],
-                                      self._hash_len)
-            to_path = os.path.basename(self.path)
+            from_path = "%s-.{%d}/%s" % (self.path[1:self.path.rindex("-")],
+                                         self._hash_len, self._name)
+            base_dir = os.path.basename(self._base_path)
+            to_path = os.path.join(base_dir, self._name)
 
             check_call("tar --xz --numeric-owner -p "
                        "--transform 's,^%s,%s,x' -xvf %s" %
