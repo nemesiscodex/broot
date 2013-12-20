@@ -233,12 +233,15 @@ class Root:
 
         return True
 
-    def setup(self):
+    def _ensure_exists(self):
         broot_exists = self._check_exists(True, message=False)
         broot_valid = self._check_stamp()
 
         if not broot_exists or not broot_valid:
             self._download()
+
+    def setup(self):
+        self._ensure_exists()
 
         self.activate()
         try:
@@ -273,6 +276,8 @@ class Root:
         return os.path.exists(self.path)
 
     def clone(self, name):
+        self._ensure_exists()
+
         self.deactivate()
 
         check_call(["rsync", "-a", "--delete", "-q", "-W", "-x",
