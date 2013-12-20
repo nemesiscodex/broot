@@ -462,6 +462,9 @@ class Root:
         with open(sudoers_path) as f:
             conf = f.read()
 
+        for line in ["Defaults    requiretty"]:
+            conf.replace(line, "# " + line)
+
         conf = conf + "\n%s ALL=(ALL:ALL) NOPASSWD:ALL" % self._user_name
 
         with open(sudoers_path, "w") as f:
