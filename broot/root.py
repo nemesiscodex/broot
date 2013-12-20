@@ -264,6 +264,9 @@ class Root:
         except OSError:
             pass
 
+        if not os.listdir(self._base_path):
+            os.rmdir(self._base_path)
+
         return True
 
     def exists(self):
