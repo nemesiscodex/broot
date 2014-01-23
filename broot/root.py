@@ -17,13 +17,13 @@ import base64
 import hashlib
 import collections
 import json
-import math
 import os
 import signal
 import shutil
 import urllib2
-import sys
 from subprocess import check_call, call, check_output
+
+import wget
 
 from broot.builder import FedoraBuilder
 from broot.builder import DebianBuilder
@@ -289,28 +289,7 @@ class Root:
         tar_path = os.path.join(self._var_dir, "broot.tar.xz")
 
         try:
-
-            input_f = urllib2.urlopen(prebuilt_url + last)
-            total = int(input_f.info().getheader("Content-Length").strip())
-
-            with open(tar_path, "w") as output_f:
-                downloaded = 0
-                progress = 0
-
-                while True:
-                    chunk = input_f.read(8192)
-                    if not chunk:
-                        break
-
-                    output_f.write(chunk)
-
-                    downloaded += len(chunk)
-
-                    new_progress = math.floor(downloaded * 100.0 / total)
-                    if new_progress != progress:
-                        progress = new_progress
-                        sys.stdout.write("Downloaded %d%%\r" % progress)
-                        sys.stdout.flush()
+            wget.download(prebuilt_url + last)
 
             from_path = "%s-.{%d}" % (self.path[1:self.path.rindex("-")],
                                       self._hash_len)
