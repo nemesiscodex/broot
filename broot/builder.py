@@ -17,7 +17,7 @@ import os
 import shutil
 import tempfile
 import urllib2
-from subprocess import check_call
+from subprocess import check_call, call
 
 
 class FedoraBuilder:
@@ -112,7 +112,13 @@ class FedoraBuilder:
         self._root.run("yum -q -y update", as_root=True)
 
     def install_packages(self, packages):
-        self._root.run("yum -q -y install %s" % " ".join(packages),
+        missing_packages = []
+
+        for package in packages:
+            if call(["rpm", "-q", package]) != 0:
+                missing_packages.append(package)
+
+        self._root.run("yum -q -y install %s" % " ".join(missing_packages),
                        as_root=True)
 
     def clean_packages(self):
