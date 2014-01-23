@@ -286,10 +286,8 @@ class Root:
 
         os.chdir(self._var_dir)
 
-        tar_path = os.path.join(self._var_dir, "broot.tar.xz")
-
         try:
-            wget.download(prebuilt_url + last)
+            tar_filename = wget.download(prebuilt_url + last)
 
             from_path = "%s-.{%d}" % (self.path[1:self.path.rindex("-")],
                                       self._hash_len)
@@ -297,7 +295,7 @@ class Root:
 
             check_call("tar --xz --numeric-owner -p "
                        "--transform 's,^%s,%s,x' -xvf %s" %
-                       (from_path, to_path, tar_path), shell=True)
+                       (from_path, to_path, tar_filename), shell=True)
         finally:
             try:
                 os.unlink(tar_path)
