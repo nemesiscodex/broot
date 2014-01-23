@@ -304,6 +304,8 @@ class Root:
 
         os.unlink(tar_filename)
 
+        print ""
+
         if result != 0:
             return False
 
