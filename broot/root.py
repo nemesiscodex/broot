@@ -299,7 +299,7 @@ class Root:
         to_path = os.path.basename(self.path)
 
         result = call("tar --xz --numeric-owner -p "
-                      "--transform 's,^%s,%s,x' -xvf %s" %
+                      "--transform 's,^%s,%s,x' -xf %s" %
                       (from_path, to_path, tar_filename), shell=True)
 
         os.unlink(tar_filename)
@@ -317,7 +317,7 @@ class Root:
 
         name = self._config["name"]
 
-        check_call(["tar", "cvfJ", "%s-broot.tar.xz" % name, self.path])
+        check_call(["tar", "cfJ", "%s-broot.tar.xz" % name, self.path])
 
         return True
 
