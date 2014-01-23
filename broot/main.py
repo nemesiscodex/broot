@@ -40,11 +40,6 @@ def cmd_setup(options, other_args):
     return root.setup()
 
 
-def cmd_update(options, other_args):
-    root = Root()
-    return root.update()
-
-
 def cmd_clean(options, other_args):
     root = Root()
     root.clean()
@@ -76,7 +71,6 @@ def main():
     run_parser.add_argument("--root", action="store_true")
 
     subparsers.add_parser("setup")
-    subparsers.add_parser("update")
     subparsers.add_parser("distribute")
     subparsers.add_parser("clean")
 
