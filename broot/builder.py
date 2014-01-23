@@ -109,10 +109,10 @@ class FedoraBuilder:
         shutil.rmtree(temp_dir)
 
     def update_packages(self):
-        self._root.run("yum -y update", as_root=True)
+        self._root.run("yum -q -y update", as_root=True)
 
     def install_packages(self, packages):
-        self._root.run("yum -v -y install %s" % " ".join(packages),
+        self._root.run("yum -q -y install %s" % " ".join(packages),
                        as_root=True)
 
     def clean_packages(self):
