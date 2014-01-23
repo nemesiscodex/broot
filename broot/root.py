@@ -237,6 +237,9 @@ class Root:
             if not self._download():
                 return False
 
+        return True
+
+    def update(self):
         self.activate()
         try:
             packages = self._install_os_packages()
