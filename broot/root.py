@@ -234,7 +234,8 @@ class Root:
         broot_valid = self._check_stamp()
 
         if not broot_exists or not broot_valid:
-            self._download()
+            if not self._download():
+                return False
 
         self.activate()
         try:
@@ -286,23 +287,26 @@ class Root:
 
         os.chdir(self._var_dir)
 
-        try:
-            tar_filename = wget.download(prebuilt_url + last)
+        tar_filename = wget.download(prebuilt_url + last)
+        if tar_filename is None:
+            return False
 
-            from_path = "%s-.{%d}" % (self.path[1:self.path.rindex("-")],
-                                      self._hash_len)
-            to_path = os.path.basename(self.path)
+        from_path = "%s-.{%d}" % (self.path[1:self.path.rindex("-")],
+                                  self._hash_len)
+        to_path = os.path.basename(self.path)
 
-            check_call("tar --xz --numeric-owner -p "
-                       "--transform 's,^%s,%s,x' -xvf %s" %
-                       (from_path, to_path, tar_filename), shell=True)
-        finally:
-            try:
-                os.unlink(tar_path)
-            except OSError:
-                pass
+        result = call("tar --xz --numeric-owner -p "
+                      "--transform 's,^%s,%s,x' -xvf %s" %
+                      (from_path, to_path, tar_filename), shell=True)
+
+        os.unlink(tar_filename)
+
+        if result != 0:
+            return False
 
         self._touch_stamp()
+
+        return True
 
     def distribute(self):
         if not self._check_exists(True):
