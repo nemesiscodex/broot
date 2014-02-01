@@ -164,7 +164,7 @@ class Root:
     def _install_npm_packages(self):
         npm_packages = self._config.get("npm_packages")
         if npm_packages:
-            self.run("npm install -q -g %s" % " ".join(npm_packages),
+            self.run("npm install -g %s" % " ".join(npm_packages),
                      as_root=True)
 
     def _install_os_packages(self):
