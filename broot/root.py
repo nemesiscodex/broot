@@ -316,7 +316,7 @@ class Root:
 
         name = self._config["name"]
 
-        check_call(["tar", "cfJ", "%s-broot.tar.xz" % name, self.path])
+        check_call(["tar", "cvfJ", "%s-broot.tar.xz" % name, self.path])
 
         return True
 
