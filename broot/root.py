@@ -329,6 +329,7 @@ class Root:
 
             env = {"LANG": "C",
                    "PATH": "/bin:/usr/bin:/usr/sbin"}
+            to_keep = ["http_proxy", "https_proxy"]
 
             if as_root:
                 env["HOME"] = "/root"
@@ -339,11 +340,11 @@ class Root:
                 env["XAUTHORITY"] = os.path.join(home_dir, ".Xauthority")
                 env["BROOT"] = "yes"
 
-                to_keep = ["DISPLAY", "XAUTHLOCALHOSTNAME", "TERM",
-                           "http_proxy", "https_proxy"]
-                for name in to_keep:
-                    if name in os.environ:
-                        env[name] = os.environ[name]
+                to_keep.extend(["DISPLAY", "XAUTHLOCALHOSTNAME", "TERM"])
+
+            for name in to_keep:
+                if name in os.environ:
+                    env[name] = os.environ[name]
 
             env_string = ""
             for name, value in env.items():
