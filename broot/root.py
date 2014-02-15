@@ -178,7 +178,11 @@ class Root:
 
         self._builder.install_packages(flat_packages)
 
-        return flat_packages
+        if "sudo" in flat_packages:
+            self._setup_sudo()
+
+        if "npm" in flat_packages:
+            self._install_npm_packages()
 
     def _get_stamp_path(self):
         return self.path + ".stamp"
@@ -213,14 +217,7 @@ class Root:
 
         self.activate()
         try:
-            packages = self._install_os_packages()
-
-            if "sudo" in packages:
-                self._setup_sudo()
-
-            if "npm" in packages:
-                self._install_npm_packages()
-
+            self._install_os_packages()
             self._builder.clean_packages()
         finally:
             self.deactivate()
@@ -239,11 +236,7 @@ class Root:
 
         self.activate()
         try:
-            packages = self._install_os_packages()
-
-            if "npm" in packages:
-                self._install_npm_packages()
-
+            self._install_os_packages()
         finally:
             self.deactivate()
 
@@ -431,7 +424,9 @@ class Root:
         with open(sudoers_path) as f:
             conf = f.read()
 
-        conf = conf + "\n%s ALL=(ALL:ALL) NOPASSWD:ALL" % self._user_name
+        line = "\n%s ALL=(ALL:ALL) NOPASSWD:ALL"
+        if line not in conf:
+            conf = conf + line % self._user_name
 
         with open(sudoers_path, "w") as f:
             f.write(conf)
