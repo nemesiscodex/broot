@@ -265,11 +265,9 @@ class Root:
         return arch
 
     def _download(self):
-        prebuilt_name = self._config["prebuilt"]["name"]
         prebuilt_url = self._config["prebuilt"]["url"]
 
-        last_url = "%slast-%s-%s" % (prebuilt_url, self.get_arch(),
-                                     prebuilt_name)
+        last_url = "%slast-%s" % (prebuilt_url, self.get_arch())
 
         try:
             last = urllib2.urlopen(last_url).read().strip()
