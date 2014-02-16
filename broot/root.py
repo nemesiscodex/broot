@@ -271,7 +271,11 @@ class Root:
         last_url = "%slast-%s-%s" % (prebuilt_url, self.get_arch(),
                                      prebuilt_name)
 
-        last = urllib2.urlopen(last_url).read().strip()
+        try:
+            last = urllib2.urlopen(last_url).read().strip()
+        except:
+            print "Failed to download %s" % last_url
+            raise
 
         try:
             os.makedirs(self._var_dir)
