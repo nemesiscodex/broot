@@ -168,8 +168,8 @@ class Root:
                      as_root=True)
 
     def _install_pypi_packages(self):
-        npm_packages = self._config.get("pypi_packages")
-        if npm_packages:
+        pypi_packages = self._config.get("pypi_packages")
+        if pypi_packages:
             self.run("pip install -g %s" % " ".join(pypi_packages),
                      as_root=True)
 
