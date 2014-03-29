@@ -167,6 +167,12 @@ class Root:
             self.run("npm install -g %s" % " ".join(npm_packages),
                      as_root=True)
 
+    def _install_pypi_packages(self):
+        npm_packages = self._config.get("pypi_packages")
+        if npm_packages:
+            self.run("pip install -g %s" % " ".join(pypi_packages),
+                     as_root=True)
+
     def _install_os_packages(self):
         self._builder.update_packages()
 
@@ -181,8 +187,8 @@ class Root:
         if "sudo" in flat_packages:
             self._setup_sudo()
 
-        if "npm" in flat_packages:
-            self._install_npm_packages()
+        self._install_npm_packages()
+        self._install_pypi_packages()
 
     def _get_stamp_path(self):
         return self.path + ".stamp"
