@@ -170,7 +170,7 @@ class Root:
     def _install_pypi_packages(self):
         pypi_packages = self._config.get("pypi_packages")
         if pypi_packages:
-            self.run("pip install -g %s" % " ".join(pypi_packages),
+            self.run("pip install %s" % " ".join(pypi_packages),
                      as_root=True)
 
     def _install_os_packages(self):
