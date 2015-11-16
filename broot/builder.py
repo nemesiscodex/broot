@@ -49,6 +49,7 @@ class FedoraBuilder:
                             line = line.replace("https", "http")
 
                     name_to_key = {"fedora-20": "246110C1",
+                                   "fedora-23": "34EC9CBA",
                                    "fedora": "FB4B18E6"}
 
                     if line.startswith("gpgkey"):
@@ -77,6 +78,10 @@ class FedoraBuilder:
         if self._name == "fedora-20":
             release_rpm = "%s/releases/20/Fedora/%s/os/Packages/f/" \
                           "fedora-release-20-1.noarch.rpm" % \
+                          (mirror, self._root.get_arch())
+        elif self._name == "fedora-23":
+            release_rpm = "%s/releases/23/Everything/%s/os/Packages/f/" \
+                          "fedora-release-23-1.noarch.rpm" % \
                           (mirror, self._root.get_arch())
         else:
             release_rpm = "%s/releases/19/Fedora/%s/os/Packages/f/" \
