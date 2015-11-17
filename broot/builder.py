@@ -71,7 +71,7 @@ class FedoraBuilder:
         self._setup_rpm()
 
         root_path = self._root.path
-
+        print("distribution: %s" % self._name)
         if mirror is None:
             mirror = "ftp://mirrors.kernel.org/fedora"
 
@@ -87,7 +87,7 @@ class FedoraBuilder:
             release_rpm = "%s/releases/19/Fedora/%s/os/Packages/f/" \
                           "fedora-release-19-2.noarch.rpm" % \
                           (mirror, self._root.get_arch())
-
+        print("rpm: %s" % release_rpm)
         temp_dir = tempfile.mkdtemp()
 
         url_f = urllib2.urlopen(release_rpm)
