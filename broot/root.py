@@ -52,6 +52,8 @@ class Root:
 
         distro = self._config.get("distro", "debian")
 
+        print("Distro: %s" % distro)
+
         if distro == "debian":
             self._builder = DebianBuilder(self)
         elif distro in ["fedora", "fedora-20", "fedora-23"]:
@@ -195,6 +197,7 @@ class Root:
 
     def _check_exists(self, exists, message=True):
         if exists:
+            print("Check path: " + self.path)
             if not os.path.exists(self.path):
                 if message:
                     print("You must create or download the build root first.")
@@ -235,6 +238,8 @@ class Root:
     def setup(self):
         broot_exists = self._check_exists(True, message=False)
         broot_valid = self._check_stamp()
+
+        print("broot_exists: " + broot_exists)
 
         if not broot_exists or not broot_valid:
             if not self._download():
