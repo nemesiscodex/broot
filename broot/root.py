@@ -239,7 +239,7 @@ class Root:
         broot_exists = self._check_exists(True, message=False)
         broot_valid = self._check_stamp()
 
-        print("broot_exists: " + broot_exists)
+        print("broot_exists: " + broot_exists.__str__())
 
         if not broot_exists or not broot_valid:
             if not self._download():
