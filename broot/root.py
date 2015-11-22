@@ -54,7 +54,7 @@ class Root:
 
         if distro == "debian":
             self._builder = DebianBuilder(self)
-        elif distro in ["fedora", "fedora-20"]:
+        elif distro in ["fedora", "fedora-20", "fedora-23"]:
             self._builder = FedoraBuilder(self, distro)
         else:
             raise ValueError("Unknown distro %s" % distro)
