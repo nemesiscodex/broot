@@ -114,7 +114,23 @@ class FedoraBuilder:
         shutil.rmtree(temp_dir)
 
     def update_packages(self):
-        self._root.run("yum -y update", as_root=True)
+        if self._name == "fedora-23":
+            root_path = self._root.path
+            mirror = "ftp://mirrors.kernel.org/fedora"
+            release_rpm = "%s/releases/23/Everything/%s/os/Packages/f/" \
+                          "fedora-release-23-1.noarch.rpm" % \
+                          (mirror, self._root.get_arch())
+            self._root.run("yum -y update", as_root=True)
+            temp_dir = tempfile.mkdtemp()
+            url_f = urllib2.urlopen(release_rpm)
+            rpm_path = os.path.join(temp_dir, "fedora-release.noarch.rpm")
+            with open(rpm_path, "w") as f:
+                f.write(url_f.read())
+            check_call(["rpm", "--root", root_path, "-i", rpm_path])
+            self._setup_yum(mirror)
+
+            check_call(["yum", "-y", "--installroot", root_path, "install",
+                        "yum"])
 
     def install_packages(self, packages):
         self._root.run("yum -v -y install %s" % " ".join(packages),
