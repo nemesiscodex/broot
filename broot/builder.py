@@ -97,7 +97,7 @@ class FedoraBuilder:
 
         try:
             check_call(["rpm", "--root", root_path, "--initdb"])
-            check_call(["rpm", "--root", root_path, "-i", rpm_path])
+            check_call(["rpm", "--root", root_path, "-i", rpm_path, "--nodeps"])
 
             self._setup_yum(mirror)
 
